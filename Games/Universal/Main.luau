@@ -1,4 +1,4 @@
-local LoadStart = tick() -- hotfix v1
+local LoadStart = tick() -- hotfix v2
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -75,7 +75,6 @@ notify("BlackKing", {
 	})
 
 	local Tabs = {
-		Info = Window:AddTab("Info", "info"),
 		Main = Window:AddTab("General", "globe"),
 		Visual = Window:AddTab("Visuals", "eye"),
         Addons = Window:AddTab("Addons", "puzzle"),
@@ -83,6 +82,8 @@ notify("BlackKing", {
 	}
 
 	getgenv().Bk = true
+
+BlackKing.Interface.ApplyInfoTab(Window)
 
 local AddonsGroup = Tabs.Addons:AddLeftGroupbox("Create Addon")
 
@@ -158,9 +159,6 @@ AddonsGroup:AddButton("Clear Addon", function()
 	loadedElements = {}
 	addonLoaded = false
 end)
-
-BlackKing.Interface.ApplyInfoTab(Window)
-
 		local mntab = Tabs.Main:AddLeftTabbox()
 		local mainft = mntab:AddTab('localplayer')
 
@@ -737,7 +735,84 @@ vslt:AddToggle("sa", {
 		end
 	end)
 Library:OnUnload(function()
-	print("unloaded...???")
+    notify("BlackKing", {
+	Title = "Upio",
+	Description = "Unloading BlackKing...",
+	Image = Upio,
+	Color = Color3.fromRGB(255, 222, 189),
+	Time = 5
+})
+
+    pcall(function()
+        for plr, obj in pairs(PlayerESPObjects) do
+            ESPLibrary:RemoveESP(obj)
+        end
+        table.clear(PlayerESPObjects)
+    end)
+
+    pcall(function()
+        for plr, parts in pairs(Original) do
+            local char = plr.Character
+            if char then
+                for name, oldSize in pairs(parts) do
+                    local part = char:FindFirstChild(name)
+                    if part then
+                        part.Size = oldSize
+                        part.Transparency = 0
+                        part.CanCollide = true
+                        part.Massless = false
+                        part.CustomPhysicalProperties = PhysicalProperties.new(1, 0.5, 0.5)
+                    end
+                end
+            end
+        end
+        table.clear(Original)
+    end)
+
+    pcall(function()
+        if Circle then
+            Circle.Visible = false
+            Circle:Remove()
+        end
+    end)
+
+    pcall(function()
+        for _, conn in pairs(Connections) do
+            if conn and conn.Disconnect then
+                conn:Disconnect()
+            end
+        end
+        table.clear(Connections)
+    end)
+
+    pcall(function()
+        for _, element in pairs(loadedElements) do
+            if element and element.Container then
+                element.Container:Destroy()
+            elseif element and element.Destroy then
+                element:Destroy()
+            end
+        end
+        table.clear(loadedElements)
+        addonLoaded = false
+    end)
+
+    pcall(function()
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = 16
+        end
+    end)
+
+ESPLibrary:Unload()
+notify("BlackKing", {
+	Title = "Upio",
+	Description = "BlackKing fully unloaded.",
+	Image = Upio,
+	Color = Color3.fromRGB(255, 222, 189),
+	Time = 5
+})
+
 end)
+
 
 BlackKing.Interface.ApplySettingsTab(Window)
