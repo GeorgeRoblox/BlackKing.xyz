@@ -1,12 +1,16 @@
 local LoadStart = tick()
--- yes
-local Library = BlacKing.Interface.Library
-local SaveManager = BlacKing.Interface.SaveManager
-local ThemeManager = BlacKing.Interface.ThemeManager
+BlackKing.SavePath = "Doors/Game"
+
+local Library = BlackKing.Interface.Library
+local SaveManager = BlackKing.Interface.SaveManager
+local ThemeManager = BlackKing.Interface.ThemeManager
+
+local Toggles = Library.Toggles
+local Options = Library.Options
 
 local function CloneReference(Object)
-	if BlacKing and BlacKing.Environment.cloneref then
-		return BlacKing.Environment.cloneref(Object)
+	if BlackKing and BlackKing.Environment.cloneref then
+		return BlackKing.Environment.cloneref(Object)
 	end
 	return Object
 end
@@ -57,9 +61,6 @@ notify("BlackKing", {
 	ESPLibrary:SetArrows(false)
 	ESPLibrary:SetArrowRadius(250)
 	ESPLibrary:SetDistanceSizeRatio(0.8)
-	
-	local Options = Library.Options
-	local Toggles = Library.Toggles
 
 	local Window = Library:CreateWindow({
 		Title = "BlackKing | Universal",
