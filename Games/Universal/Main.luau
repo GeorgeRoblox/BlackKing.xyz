@@ -159,7 +159,7 @@ AddonsGroup:AddButton("Clear Addon", function()
 	addonLoaded = false
 end)
 
-BlackKing.Interface.ApplyInfoTab(Window)
+B.Interface.ApplyInfoTab(Window)
 
 		local mntab = Tabs.Main:AddLeftTabbox()
 		local mainft = mntab:AddTab('localplayer')
@@ -741,4 +741,3 @@ Library:OnUnload(function()
 end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
-	end
