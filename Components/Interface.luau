@@ -1,4 +1,4 @@
-local Library = (BlackKing.UILibrary == "Linoria" and "LinoriaLib" or "Obsidian") -- fixed
+local Library = (BlackKing.UILibrary == "Linoria" and "LinoriaLib" or "Obsidian")
 local BaseUrl = "https://raw.githubusercontent.com/mstudio45/" .. Library .. "/refs/heads/main/"
 local BlackKingUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
 
@@ -12,7 +12,17 @@ local Interface = {
 }
 
 Interface.ThemeManager.BuiltInThemes = {
-		["Default"]        = { 1, { FontColor = "e6e6e6", MainColor = "1c1c1c", AccentColor = "0055ff", BackgroundColor = "141414", OutlineColor = "323232" } },
+		["Default"] = { 
+    1, 
+    { 
+        FontColor = "e6e6e6", 
+        MainColor = "1c1c1c", 
+        AccentColor = "0055ff", 
+        BackgroundColor = "141414", 
+        OutlineColor = "323232" 
+    } 
+},
+
 		["BBot"]           = { 2,  { FontColor = "ffffff", MainColor = "1e1e1e", AccentColor = "7e48a3", BackgroundColor = "232323", OutlineColor = "141414" } },
 		["Fatality"]       = { 3,  { FontColor = "ffffff", MainColor = "1e1842", AccentColor = "c50754", BackgroundColor = "191335", OutlineColor = "3c355d" } },
 		["Jester"]         = { 4,  { FontColor = "ffffff", MainColor = "242424", AccentColor = "db4467", BackgroundColor = "1c1c1c", OutlineColor = "373737" } },
