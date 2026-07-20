@@ -1,4 +1,4 @@
-local LoadStart = tick() -- g
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -365,97 +365,111 @@ end)
 
 	local PlayerESPObjects = {}
 
-	local Players = game:GetService("Players")
-	local LocalPlayer = Players.LocalPlayer
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-	local function ClearPlayerESP()
-		for plr, espObj in pairs(PlayerESPObjects) do
-			if espObj then
-				ESPLibrary:RemoveESP(espObj)
-			end
-		end
-		table.clear(PlayerESPObjects)
-	end
+local function ClearPlayerESP()
+    for plr, espObj in pairs(PlayerESPObjects) do
+        if espObj then
+            ESPLibrary:RemoveESP(espObj)
+        end
+    end
+    table.clear(PlayerESPObjects)
+end
 
-	local function GetPlayerColor(plr)
-		if plr.Team ~= nil then
-			return plr.TeamColor.Color
-		end
-		return Color3.fromRGB(255, 255, 255)
-	end
+local function GetPlayerColor(plr)
+    if plr.Team ~= nil then
+        return plr.TeamColor.Color
+    end
+    return Color3.fromRGB(255, 255, 255)
+end
 
-	local function CreatePlayerESP(plr)
-		if not Toggles.PlayerEsp.Value then return end
-		if plr == LocalPlayer then return end
-		if PlayerESPObjects[plr] then return end
+local function CreatePlayerESP(plr)
+    if not Toggles.PlayerEsp.Value then return end
+    if plr == LocalPlayer then return end
 
-		local char = plr.Character
-		if not char then return end
+    local char = plr.Character
+    if not char then return end
 
-		local color = GetPlayerColor(plr)
+    -- remove old ESP if exists
+    if PlayerESPObjects[plr] then
+        ESPLibrary:RemoveESP(PlayerESPObjects[plr])
+        PlayerESPObjects[plr] = nil
+    end
 
-		ESPLibrary:AddESP({
-			Object = char,
-			Text   = plr.Name,
-			Color  = color
-		})
+    local color = GetPlayerColor(plr)
 
-		PlayerESPObjects[plr] = char
-	end
+    local espObj = ESPLibrary:AddESP({
+        Object = char,
+        Text   = plr.Name,
+        Color  = color
+    })
 
-	local function HookCharacter(plr)
-		plr.CharacterAdded:Connect(function(char)
-			task.wait(0.1)
-			CreatePlayerESP(plr)
-		end)
-	end
+    PlayerESPObjects[plr] = espObj
+end
 
-	local function HookTeamChange(plr)
-		if plr:GetAttribute("TeamColor") then return end
+local function HookCharacter(plr)
+    plr.CharacterAdded:Connect(function(char)
+        task.wait(0.1)
+        CreatePlayerESP(plr)
+    end)
 
-		plr:GetPropertyChangedSignal("Team"):Connect(function()
-			if PlayerESPObjects[plr] then
-				local newColor = GetPlayerColor(plr)
-				ESPLibrary:UpdateObjectColor(PlayerESPObjects[plr], newColor)
-			end
-		end)
-	end
+    -- remove ESP when character dies
+    plr.CharacterRemoving:Connect(function()
+        if PlayerESPObjects[plr] then
+            ESPLibrary:RemoveESP(PlayerESPObjects[plr])
+            PlayerESPObjects[plr] = nil
+        end
+    end)
+end
 
-	for _, plr in ipairs(Players:GetPlayers()) do
-		if plr ~= LocalPlayer then
-			HookCharacter(plr)
-			HookTeamChange(plr)
-			if plr.Character then
-				CreatePlayerESP(plr)
-			end
-		end
-	end
+local function HookTeamChange(plr)
+    plr:GetPropertyChangedSignal("Team"):Connect(function()
+        if PlayerESPObjects[plr] then
+            local newColor = GetPlayerColor(plr)
+            ESPLibrary:UpdateObjectColor(PlayerESPObjects[plr], newColor)
+        end
+    end)
+end
 
-	Players.PlayerAdded:Connect(function(plr)
-		HookCharacter(plr)
-		HookTeamChange(plr)
-		task.wait(0.1)
-		CreatePlayerESP(plr)
-	end)
+-- existing players
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then
+        HookCharacter(plr)
+        HookTeamChange(plr)
+        if plr.Character then
+            CreatePlayerESP(plr)
+        end
+    end
+end
 
-	Players.PlayerRemoving:Connect(function(plr)
-		if PlayerESPObjects[plr] then
-			ESPLibrary:RemoveESP(PlayerESPObjects[plr])
-			PlayerESPObjects[plr] = nil
-		end
-	end)
+-- new players
+Players.PlayerAdded:Connect(function(plr)
+    HookCharacter(plr)
+    HookTeamChange(plr)
+    task.wait(0.1)
+    CreatePlayerESP(plr)
+end)
 
-	Toggles.PlayerEsp:OnChanged(function(v)
-		if not v then
-			ClearPlayerESP()
-		else
-			for _, plr in ipairs(Players:GetPlayers()) do
-				if plr ~= LocalPlayer then
-					CreatePlayerESP(plr)
-				end
-			end
-		end
-	end)
+Players.PlayerRemoving:Connect(function(plr)
+    if PlayerESPObjects[plr] then
+        ESPLibrary:RemoveESP(PlayerESPObjects[plr])
+        PlayerESPObjects[plr] = nil
+    end
+end)
+
+Toggles.PlayerEsp:OnChanged(function(v)
+    if not v then
+        ClearPlayerESP()
+    else
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                CreatePlayerESP(plr)
+            end
+        end
+    end
+end)
+
 
 	vslt:AddSlider("FOVSIRCLE", {
 		Text = "Circle",
@@ -480,7 +494,7 @@ end)
 local HitboxSize = Vector3.new(50, 50, 50)
 local HitboxLoop
 
-gleft:AddToggle("SAim", {
+vslt:AddToggle("SAim", {
     Text = "SilentAim",
     Default = false,
     Callback = function(Value)
@@ -674,7 +688,7 @@ Library:OnUnload(function()
         Color = Color3.fromRGB(255, 222, 189),
         Time = 5
     })
-	
+
     pcall(function()
         for plr, obj in pairs(PlayerESPObjects) do
             ESPLibrary:RemoveESP(obj)
