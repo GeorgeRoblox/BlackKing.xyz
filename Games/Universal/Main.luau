@@ -1,4 +1,4 @@
-local LoadStart = tick()
+
 BlacKing.SavePath = "Universal"
 
 local Library = BlacKing.Interface.Library
