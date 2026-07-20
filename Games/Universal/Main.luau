@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- g
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -477,118 +477,52 @@ end)
 	})
 
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local HitboxSize = Vector3.new(50, 50, 50)
+local HitboxLoop
 
-local ToggleOn = false
-local Original = {}
-
-local function SaveOriginal(plr, part)
-    if not Original[plr] then
-        Original[plr] = {}
-    end
-    if not Original[plr][part.Name] then
-        Original[plr][part.Name] = part.Size
-    end
-end
-
-local function ApplyHitboxes(plr)
-    if plr == LocalPlayer then return end
-    if plr.Team == LocalPlayer.Team then return end
-
-    local char = plr.Character
-    if not char then return end
-
-    local parts = {
-        Head = Vector3.new(20,20,20),
-      --  RightUpperLeg = Vector3.new(13,13,13),
-       -- LeftUpperLeg = Vector3.new(13,13,13),
-      --  HeadHB = Vector3.new(20,20,20),
-        HumanoidRootPart = Vector3.new(13,13,13)
-    }
-
-    for name, newSize in pairs(parts) do
-        local part = char:FindFirstChild(name)
-        if part then
-            SaveOriginal(plr, part)
-
-            part.Size = newSize
-            part.Transparency = 10
-
-            part.CanCollide = false
-            part.Massless = false  -- <<<<<<<<<<<<<< HERE
-            part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-        end
-    end
-end
-
-local function RestoreOriginal(plr)
-    if not Original[plr] then return end
-    local char = plr.Character
-    if not char then return end
-
-    for name, oldSize in pairs(Original[plr]) do
-        local part = char:FindFirstChild(name)
-        if part then
-            part.Size = oldSize
-            part.Transparency = 0
-            part.CanCollide = true
-            part.Massless = false
-            part.CustomPhysicalProperties = PhysicalProperties.new(1, 0.5, 0.5)
-        end
-    end
-end
-
-local function UpdatePlayer(plr)
-    if ToggleOn then
-        ApplyHitboxes(plr)
-    else
-        RestoreOriginal(plr)
-    end
-end
-
-local function HookCharacter(plr)
-    plr.CharacterAdded:Connect(function()
-        task.wait(0.1)
-        UpdatePlayer(plr)
-    end)
-end
-
-local function HookTeam(plr)
-    plr:GetPropertyChangedSignal("Team"):Connect(function()
-        UpdatePlayer(plr)
-    end)
-end
-
-Players.PlayerAdded:Connect(function(plr)
-    HookCharacter(plr)
-    HookTeam(plr)
-    task.wait(0.1)
-    UpdatePlayer(plr)
-end)
-
-for _, plr in ipairs(Players:GetPlayers()) do
-    HookCharacter(plr)
-    HookTeam(plr)
-end
-
-vslt:AddToggle("sa", {
-    Text = "sa",
+gleft:AddToggle("SAim", {
+    Text = "SilentAim",
     Default = false,
-    Callback = function(state)
-        ToggleOn = state
+    Callback = function(Value)
 
-        if not state then
-            for plr in pairs(Original) do
-                RestoreOriginal(plr)
+        if Value then
+            if HitboxLoop then return end
+
+            HitboxLoop = task.spawn(function()
+                while Toggles.SAim.Value do
+                    for _, obj in ipairs(workspace.Live:GetChildren()) do
+                        if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                            local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("HRP")
+                            if hrp then
+                                local cf = hrp.CFrame
+                                hrp.Size = HitboxSize
+                                hrp.Massless = false
+                                hrp.CanCollide = false
+                                hrp.CFrame = cf
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+
+        else
+            HitboxLoop = nil
+
+            for _, obj in ipairs(workspace.Live:GetChildren()) do
+                if obj:IsA("Model") then
+                    local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("HRP")
+                    if hrp then
+                        hrp.Size = Vector3.new(2, 2, 1)
+                        hrp.Massless = false
+                        hrp.CanCollide = true
+                    end
+                end
             end
-        end
-
-        for _, plr in ipairs(Players:GetPlayers()) do
-            UpdatePlayer(plr)
         end
     end
 })
+
 
 	vslt:AddToggle("EnableTeamCheck", {
 		Text = "Enable Team Check",
@@ -734,37 +668,18 @@ vslt:AddToggle("sa", {
 	end)
 Library:OnUnload(function()
     notify("BlackKing", {
-	Title = "Upio",
-	Description = "Unloading BlackKing...",
-	Image = Upio,
-	Color = Color3.fromRGB(255, 222, 189),
-	Time = 5
-})
-
+        Title = "Upio",
+        Description = "Unloading BlackKing...",
+        Image = Upio,
+        Color = Color3.fromRGB(255, 222, 189),
+        Time = 5
+    })
+	
     pcall(function()
         for plr, obj in pairs(PlayerESPObjects) do
             ESPLibrary:RemoveESP(obj)
         end
         table.clear(PlayerESPObjects)
-    end)
-
-    pcall(function()
-        for plr, parts in pairs(Original) do
-            local char = plr.Character
-            if char then
-                for name, oldSize in pairs(parts) do
-                    local part = char:FindFirstChild(name)
-                    if part then
-                        part.Size = oldSize
-                        part.Transparency = 0
-                        part.CanCollide = true
-                        part.Massless = false
-                        part.CustomPhysicalProperties = PhysicalProperties.new(1, 0.5, 0.5)
-                    end
-                end
-            end
-        end
-        table.clear(Original)
     end)
 
     pcall(function()
@@ -801,17 +716,33 @@ Library:OnUnload(function()
         end
     end)
 
-ESPLibrary:Unload()
-getgenv().BlackKing = nil
-task.wait(1)
-notify("BlackKing", {
-	Title = "Upio",
-	Description = "BlackKing fully unloaded.",
-	Image = Upio,
-	Color = Color3.fromRGB(255, 222, 189),
-	Time = 5
-})
+    pcall(function()
+        HitboxLoop = nil
 
+        for _, obj in ipairs(workspace.Live:GetChildren()) do
+            if obj:IsA("Model") then
+                local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("HRP")
+                if hrp then
+                    hrp.Size = Vector3.new(2, 2, 1)
+                    hrp.Massless = false
+                    hrp.CanCollide = true
+                end
+            end
+        end
+    end)
+    ESPLibrary:Unload()
+    getgenv().BlackKing = nil
+
+    task.wait(1)
+
+    notify("BlackKing", {
+        Title = "Upio",
+        Description = "BlackKing fully unloaded.",
+        Image = Upio,
+        Color = Color3.fromRGB(255, 222, 189),
+        Time = 5
+    })
 end)
+
 
 BlackKing.Interface.ApplySettingsTab(Window)
