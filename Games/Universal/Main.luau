@@ -802,6 +802,8 @@ Library:OnUnload(function()
     end)
 
 ESPLibrary:Unload()
+getgenv().Abysall = nil
+task.wait(1)
 notify("BlackKing", {
 	Title = "Upio",
 	Description = "BlackKing fully unloaded.",
