@@ -12,7 +12,7 @@ local GameList = {
 local BaseUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
 getgenv().BlackKing = {
     Environment = loadstring(game:HttpGet(BaseUrl .. "Components/Environment.luau"))(),
-    ESPLibrary = loadstring(game:HttpGet(BaseUrl .. "Components/ESP.luau"))(),
+    ESPLibrary = loadstring(game:HttpGet(BaseUrl .. "Components/ESPLibrary.luau"))(),
 
     Legit = true,
 }
