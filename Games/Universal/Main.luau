@@ -802,7 +802,7 @@ Library:OnUnload(function()
     end)
 
 ESPLibrary:Unload()
-getgenv().Abysall = nil
+getgenv().BlackKing = nil
 task.wait(1)
 notify("BlackKing", {
 	Title = "Upio",
