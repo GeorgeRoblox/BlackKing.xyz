@@ -159,76 +159,7 @@ AddonsGroup:AddButton("Clear Addon", function()
 	addonLoaded = false
 end)
 
-local InfoGroup = Tabs.Info:AddLeftGroupbox("Info")
-local InfoGroup2 = Tabs.Info:AddRightGroupbox("Result Test")
-
-local Environment = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/bocaj111004/Abysall/refs/heads/main/Components/Environment.luau"
-))()
-
-local Passed = 0
-
-for _, Result in pairs(Environment.Results) do
-    if Result:find("✅") then
-        Passed += 1
-    end
-end
-
-InfoGroup2:AddLabel("Passed: " .. Passed .. "/" .. #Environment.Results)
-
-InfoGroup2:AddDivider()
-
-for _, Result in pairs(Environment.Results) do
-    Result = Result:gsub("<", "(")
-    Result = Result:gsub(">", ")")
-
-    InfoGroup2:AddLabel(Result, true)
-end
-
-InfoGroup:AddLabel("BlackKing Doors Official")
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local ImageType = Enum.ThumbnailType.HeadShot
-local ImageSize = Enum.ThumbnailSize.Size420x420
-
-local Thumbnail = select(1, Players:GetUserThumbnailAsync(
-    LocalPlayer.UserId,
-    ImageType,
-    ImageSize
-))
-
-InfoGroup:AddImage("PlayerIcon", {
-    Image = Thumbnail
-})
-
-local ExecutionFile = "BlackKingOfficialExecutions.txt"
-
-local TotalExecutions = 0
-if isfile and isfile(ExecutionFile) then
-    TotalExecutions = tonumber(readfile(ExecutionFile)) or 0
-end
-
-TotalExecutions += 1
-
-if writefile then
-    writefile(ExecutionFile, tostring(TotalExecutions))
-end
-
-InfoGroup:AddLabel("Username: " .. LocalPlayer.Name)
-InfoGroup:AddLabel("Total Executions: " .. TotalExecutions)
-InfoGroup:AddDivider()
-InfoGroup:AddButton("Copy Discord Invite", function()
-    setclipboard("https://dsc.gg/BlackKing")
-    notify("BlackKing", {
-        Title = "George",
-        Description = "Discord link copied to clipboard.",
-        Image = George,
-        Color = Color3.fromRGB(255, 222, 189),
-        Time = 5
-    })
-end)
+BlackKing.Interface.ApplyInfoTab(Window)
 
 		local mntab = Tabs.Main:AddLeftTabbox()
 		local mainft = mntab:AddTab('localplayer')
@@ -810,3 +741,4 @@ Library:OnUnload(function()
 end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
+	end
