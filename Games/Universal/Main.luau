@@ -1,5 +1,5 @@
 local LoadStart = tick()
-BlackKing.SavePath = "Doors/Game"
+BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
 local SaveManager = BlackKing.Interface.SaveManager
