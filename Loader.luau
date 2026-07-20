@@ -1,4 +1,4 @@
-if BlackKing then
+if BlackKing then -- a
     return 
 end
 getgenv().BlackKing = {
