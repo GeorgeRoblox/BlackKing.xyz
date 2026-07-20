@@ -1,13 +1,14 @@
-local Library = (BlackKing.UILibrary == "Linoria" and "LinoriaLib" or "Obsidian")
+local Library = (Abysall.UILibrary == "Linoria" and "LinoriaLib" or "Obsidian")
 local BaseUrl = "https://raw.githubusercontent.com/mstudio45/" .. Library .. "/refs/heads/main/"
-local BlackKing.xyz = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
+local BlackKingUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
 
 local Interface = {
   Library = loadstring(game:HttpGet(BaseUrl .. "Library.lua"))(),
   SaveManager = loadstring(game:HttpGet(BaseUrl .. "addons/SaveManager.lua"))(),
   ThemeManager = loadstring(game:HttpGet(BaseUrl .. "addons/ThemeManager.lua"))(),
 
-  ApplySettingsTab = loadstring(game:HttpGet(BlackKing.xyz .. "Components/SettingsTab.luau"))()
+  ApplyInfoTab = loadstring(game:HttpGet(BlackKingUrl .. "Components/InfoTab.luau"))(),
+  ApplySettingsTab = loadstring(game:HttpGet(BlackKingUrl .. "Components/SettingsTab.luau"))()
 }
 
 Interface.ThemeManager.BuiltInThemes = {
