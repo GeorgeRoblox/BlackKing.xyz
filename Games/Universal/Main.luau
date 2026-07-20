@@ -1,4 +1,4 @@
-
+local LoadStart = tick()
 BlacKing.SavePath = "Universal"
 
 local Library = BlacKing.Interface.Library
@@ -805,6 +805,8 @@ vslt:AddToggle("sa", {
 			end
 		end
 	end)
+Library:OnUnload(function()
+	print("unloaded...???")
+end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
-	end
