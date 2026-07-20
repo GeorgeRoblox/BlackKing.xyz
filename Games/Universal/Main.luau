@@ -1,4 +1,4 @@
-local LoadStart = tick() -- hotfix v2
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -74,16 +74,14 @@ notify("BlackKing", {
 		MenuFadeTime = 0.2
 	})
 
+	
+BlackKing.Interface.ApplyInfoTab(Window)
+
 	local Tabs = {
 		Main = Window:AddTab("General", "globe"),
 		Visual = Window:AddTab("Visuals", "eye"),
         Addons = Window:AddTab("Addons", "puzzle"),
-		["UI Settings"] = Window:AddTab("UI Settings", "settings"),
 	}
-
-	getgenv().Bk = true
-
-BlackKing.Interface.ApplyInfoTab(Window)
 
 local AddonsGroup = Tabs.Addons:AddLeftGroupbox("Create Addon")
 
@@ -813,6 +811,5 @@ notify("BlackKing", {
 })
 
 end)
-
 
 BlackKing.Interface.ApplySettingsTab(Window)
