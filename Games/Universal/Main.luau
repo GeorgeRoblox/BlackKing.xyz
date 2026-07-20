@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- hotfix v1
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -159,7 +159,7 @@ AddonsGroup:AddButton("Clear Addon", function()
 	addonLoaded = false
 end)
 
-B.Interface.ApplyInfoTab(Window)
+BlackKing.Interface.ApplyInfoTab(Window)
 
 		local mntab = Tabs.Main:AddLeftTabbox()
 		local mainft = mntab:AddTab('localplayer')
