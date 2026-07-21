@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --yes
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -259,11 +259,6 @@ local function GetHiddenContainer()
 	return Services.CoreGui
 end
 
-local NotificationLibrary = {
-	LiveNotifications = 0,
-	Notifications = 1
-}
-
 local Container = Instance.new("ScreenGui")
 Container.Name = BlackKing.ESPLibrary:GenerateRandomString()
 Container.Parent = GetHiddenContainer()
@@ -276,129 +271,6 @@ if not Library.Scheme then
 			return Library[Name]
 		end
 	})
-end
-
-function NotificationLibrary:Notify(TitleText, Desc, Delay)
-	task.spawn(function()
-		local Notification = Instance.new("Frame")
-		local Line = Instance.new("Frame")
-		local Warning = Instance.new("ImageLabel")
-		local UICorner = Instance.new("UICorner")
-		local UICorner2 = Instance.new("UICorner")
-		local Title = Instance.new("TextLabel")
-		local Description = Instance.new("TextLabel")
-
-		Notification.Name = "Notification"
-		Notification.Parent = Container
-		Notification.BackgroundColor3 = Library.Scheme.BackgroundColor
-		Notification.BackgroundTransparency = 0.4
-		Notification.BorderSizePixel = 0
-		Notification.Position = UDim2.new(1, 5, 0, 60 + (60 * NotificationLibrary.LiveNotifications))
-		Notification.Size = UDim2.new(0, 420, 0, 50)
-		Notification:SetAttribute("ID", NotificationLibrary.Notifications)
-		Notification:SetAttribute("CurrentPosition", Notification.Position)
-
-		Line.Name = "Line"
-		Line.Parent = Notification
-		Line.BackgroundColor3 = Library.Scheme.AccentColor
-		Line.BorderSizePixel = 0
-		Line.Position = UDim2.new(0, 0, 1, -3)
-		Line.Size = UDim2.new(0, 0, 0, 3)
-
-		Warning.Name = "Warning"
-		Warning.Parent = Notification
-		Warning.BackgroundTransparency = 1
-		Warning.Position = UDim2.new(0, 10, 0, 5)
-		Warning.Size = UDim2.new(0, 40, 0, 40)
-		Warning.Image = "rbxassetid://3944668821"
-		Warning.ImageColor3 = Library.Scheme.AccentColor
-		Warning.ScaleType = Enum.ScaleType.Fit
-
-		UICorner.CornerRadius = UDim.new(0, 20)
-		UICorner.Parent = Warning
-
-		UICorner2.CornerRadius = UDim.new(0, 4)
-		UICorner2.Parent = Notification
-
-		Title.Name = "Title"
-		Title.Parent = Notification
-		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Title.BackgroundTransparency = 1
-		Title.Position = UDim2.new(0, 60, 0.155, 0)
-		Title.Size = UDim2.new(0, 205, 0, 15)
-		Title.Text = TitleText or "..."
-		Title.TextColor3 = Library.Scheme.FontColor
-		Title.TextSize = 10
-		Title.TextStrokeTransparency = 0.75
-		Title.TextXAlignment = Enum.TextXAlignment.Left
-
-		Description.Name = "Description"
-		Description.Parent = Notification
-		Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Description.BackgroundTransparency = 1
-		Description.Position = UDim2.new(0, 60, 0.483, 0)
-		Description.Size = UDim2.new(0, 205, 0, 18)
-		Description.Text = Desc or "..."
-		Description.TextColor3 = Library.Scheme.FontColor
-		Description.TextTransparency = 0.1
-		Description.TextSize = 10
-		Description.TextStrokeTransparency = 0.75
-		Description.TextXAlignment = Enum.TextXAlignment.Left
-
-		NotificationLibrary.LiveNotifications += 1
-		NotificationLibrary.Notifications += 1
-
-		Services.TweenService:Create(
-			Notification,
-			TweenInfo.new(1, Enum.EasingStyle.Exponential),
-			{ Position = UDim2.new(1, -370, 0, Notification.Position.Y.Offset) }
-		):Play()
-
-		task.wait(0.25)
-		if typeof(Delay) == "Instance" then
-			Delay.Destroying:Wait()
-		else
-			Services.TweenService:Create(
-				Line,
-				TweenInfo.new(Delay - 0.25, Enum.EasingStyle.Linear),
-				{ Size = UDim2.new(0, 400, 0, 3) }
-			):Play()
-			task.wait(Delay - 0.25)
-		end
-
-		Notification:SetAttribute("Destroying", true)
-
-		Services.TweenService:Create(
-			Notification,
-			TweenInfo.new(0.75, Enum.EasingStyle.Exponential, Enum.EasingDirection.In),
-			{ Position = UDim2.new(1, 5, 0, Notification.Position.Y.Offset) }
-		):Play()
-
-		NotificationLibrary.LiveNotifications -= 1
-
-		local NotifId = Notification:GetAttribute("ID")
-		local NotifY = Notification:GetAttribute("CurrentPosition").Y.Offset
-
-		for _, Object in Container:GetChildren() do
-			if Object.Name == "Notification"
-				and Object:GetAttribute("ID")
-				and Object:GetAttribute("ID") > NotifId
-				and Object:GetAttribute("Destroying") ~= true
-				and Object.Position.Y.Offset ~= 60
-			then
-				local NewY = Object:GetAttribute("CurrentPosition").Y.Offset - 60
-				Object:SetAttribute("CurrentPosition", UDim2.new(1, -450, 0, NewY))
-				Services.TweenService:Create(
-					Object,
-					TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut),
-					{ Position = UDim2.new(1, -370, 0, NewY) }
-				):Play()
-			end
-		end
-
-		task.wait(0.75)
-		Notification:Destroy()
-	end)
 end
 
 Globals.DoorsNotify = function(NotifyOptions)
@@ -465,41 +337,47 @@ Globals.DoorsNotify = function(NotifyOptions)
 		Achievement:Destroy()
 	end)
 end
-local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
-Globals.STX = print("a")
+
 Functions.Notify = function(Settings)
-	local HiddenContainer = GetHiddenContainer()
+    local HiddenContainer = GetHiddenContainer()
 
-	if not Settings.Body then
-		Settings.Body = "..."
-	end
+    if not Settings.Body then
+        Settings.Body = "..."
+    end
 
-	if not Options.NotifyStyle or Options.NotifyStyle.Value == "BlackKing" then
-		notify("BlackKing", {
-	Title = Settings.Title,
-	Description = Settings.Body,
-	Image = Settings.Image,
-	Color = IsEntity and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 222, 189),
-	Time = Settings.Time
-})
-	elseif Options.NotifyStyle.Value == "Doors" then
-		local IsEntity = false
-		local EntityName = ""
-		for Index, Object in pairs(Entities) do
-			if Object.NotifyMessage.Title == Settings.Title or Object.NotifyMessage.Body == Settings.Body then
-				IsEntity = true
-				EntityName = Index
-			end
-		end
-		Globals.DoorsNotify({
-			Title = "BlackKing Hub",
-			Description = Settings.Title,
-			Reason = Settings.Body,
-			Style = IsEntity and "WARNING" or "NOTIFICATION",
-			Color = IsEntity and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 222, 189),
-			Image = Settings.Image,
-			Time = Settings.Time
-		})
+    if not Options.NotifyStyle or Options.NotifyStyle.Value == "BlackKing" then
+        local IsEntity = false
+        local EntityName = ""
+
+        for Index, Object in pairs(Entities) do
+            if Object.NotifyMessage.Title == Settings.Title or Object.NotifyMessage.Body == Settings.Body then
+                IsEntity = true
+                EntityName = Index
+            end
+        end
+
+        notify("BlackKing", {
+            Title = Settings.Title,
+            Description = Settings.Body,
+            Image = Settings.Image,
+            Color = IsEntity and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 222, 189),
+            Time = Settings.Time
+        })
+
+    else
+        local Sound = Instance.new("Sound", HiddenContainer)
+        Sound.SoundId = "rbxassetid://4590662766"
+        Sound.Volume = (Toggles.NotifyPlaySound and Toggles.NotifyPlaySound.Value and Options.NotifySoundVolume.Value)
+            or (Toggles.NotifyPlaySound and 0 or 3)
+        Sound.PlayOnRemove = true
+        Sound:Destroy()
+
+        Library:OldNotify({
+            Title = Settings.Title,
+            Description = Settings.Body,
+            Time = Settings.Time
+        })
+    end
 end
 
 Functions.Caption = function(Text, PlaySound)
@@ -1321,7 +1199,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
 	Tooltip = "Completely disables the anticheat, after interacting with a ladder."
 })
 Groupboxes.Exploits_BypassRight:AddToggle("VelocityManipulationToggle", {
-	Text = "Teleport Manipulation", Default = false,
+	Text = "Velocity Manipulation", Default = false,
 	Tooltip = "Moves your character forward slowly, mitigating the game's anti-noclip."
 })
 Toggles.DisableAnticheat:OnChanged(function(Value)
@@ -1331,11 +1209,11 @@ Toggles.DisableAnticheat:OnChanged(function(Value)
 	end
 end)
 Toggles.VelocityManipulationToggle:AddKeyPicker("VelocityManipulationKeybind", {
-	Text = "Teleport Manipulation", Default = "V",
+	Text = "Velocity Manipulation", Default = "V",
 	Mode = Library.IsMobile and "Toggle" or "Hold", SyncToggleState = true
 })
 Groupboxes.Exploits_BypassRight:AddDropdown("VelocityManipulationMode", {
-	Values = {"Pivot", "Velocity"}, Text = "Manipulation Method",
+	Values = {"Velocity", "Pivot"}, Text = "Manipulation Method",
 	Default = 1,
 })
 
@@ -1630,7 +1508,7 @@ end)
 Groupboxes.Visuals_EntitySettings:AddToggle("EntityChatToggle", { Text = "Notify Chat", Default = false, Tooltip = "Sends a message in the chat when an entity spawns." })
 Groupboxes.Visuals_EntitySettings:AddInput("EntityChatMessage", { Text = "Message", Default = "spawned!", Numeric = false, Placeholder = "Message" })
 Groupboxes.Visuals_EntitySettings:AddDivider()
-Groupboxes.Visuals_EntitySettings:AddDropdown("NotifyStyle", { Text = "Notify Style", Values = { "BlackKing", "Doors", "STX", "Library" }, Default = 1 })
+Groupboxes.Visuals_EntitySettings:AddDropdown("NotifyStyle", { Text = "Notify Style", Values = { "BlackKing", "Library" }, Default = 1 })
 Groupboxes.Visuals_EntitySettings:AddSlider("NotifySoundVolume", { Text = "Sound Volume", Min = 0, Max = 10, Default = 3, Rounding = 1 })
 Groupboxes.Visuals_EntitySettings:AddToggle("NotifyPlaySound", { Text = "Play Sound", Default = true, Tooltip = "Makes notifications play an alert sound." })
 Groupboxes.Visuals_EntitySettings:AddToggle("NotifyKeepNotifications", { Text = "Keep Notifications", Default = false, Tooltip = "Certain notifications will stay on screen until they are no longer needed." })
