@@ -1,4 +1,4 @@
-local LoadStart = tick() -- yes
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -494,11 +494,11 @@ end)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local HitboxSize = Vector3.new(50, 50, 50)
+local HitboxSize = Vector3.new(15, 15, 15)
 local DefaultSize = Vector3.new(2, 2, 1)
 
-local HitboxLoop
-
+local HitboxRunning = false
+local HitboxThread = nil
 
 local function ResizeCharacter(player, size)
     if player == LocalPlayer then return end
@@ -523,19 +523,14 @@ vslt:AddToggle("SAim", {
     Callback = function(Value)
 
         if Value then
+            HitboxRunning = true
 
             for _, player in ipairs(Players:GetPlayers()) do
                 ResizeCharacter(player, HitboxSize)
             end
 
-            Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function()
-                    ResizeCharacter(player, HitboxSize)
-                end)
-            end)
-
-            HitboxLoop = task.spawn(function()
-                while Toggles.SAim.Value do
+            HitboxThread = task.spawn(function()
+                while HitboxRunning do
                     for _, player in ipairs(Players:GetPlayers()) do
                         ResizeCharacter(player, HitboxSize)
                     end
@@ -544,8 +539,8 @@ vslt:AddToggle("SAim", {
             end)
 
         else
-
-            HitboxLoop = nil
+            HitboxRunning = false
+            HitboxThread = nil
 
             for _, player in ipairs(Players:GetPlayers()) do
                 ResizeCharacter(player, DefaultSize)
@@ -553,8 +548,6 @@ vslt:AddToggle("SAim", {
         end
     end
 })
-
-
 
 	vslt:AddToggle("EnableTeamCheck", {
 		Text = "Enable Team Check",
@@ -743,6 +736,9 @@ Library:OnUnload(function()
     end)
 
 pcall(function()
+    HitboxRunning = false
+    HitboxThread = nil
+
     local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
 
@@ -762,6 +758,7 @@ pcall(function()
         end
     end
 end)
+
 
     pcall(function()
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
