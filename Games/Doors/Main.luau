@@ -1,4 +1,4 @@
-local LoadStart = tick() -- yes
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -465,7 +465,7 @@ Globals.DoorsNotify = function(NotifyOptions)
 		Achievement:Destroy()
 	end)
 end
-
+local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
 Globals.STX = print("a")
 Functions.Notify = function(Settings)
 	local HiddenContainer = GetHiddenContainer()
@@ -475,12 +475,13 @@ Functions.Notify = function(Settings)
 	end
 
 	if not Options.NotifyStyle or Options.NotifyStyle.Value == "BlackKing" then
-		local Sound = Instance.new("Sound", HiddenContainer)
-		Sound.SoundId = "rbxassetid://8784885431"
-		Sound.Volume = (Toggles.NotifyPlaySound and Toggles.NotifyPlaySound.Value and Options.NotifySoundVolume.Value) or (Toggles.NotifyPlaySound and 0 or 3)
-		Sound.PlayOnRemove = true
-		Sound:Destroy()
-		NotificationLibrary:Notify(Settings.Title, Settings.Body, Settings.Time or 5)
+		notify("BlackKing", {
+	Title = Settings.Title,
+	Description = Settings.Body,
+	Image = Settings.Image,
+	Color = IsEntity and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 222, 189),
+	Time = Settings.Time
+})
 	elseif Options.NotifyStyle.Value == "Doors" then
 		local IsEntity = false
 		local EntityName = ""
@@ -499,33 +500,6 @@ Functions.Notify = function(Settings)
 			Image = Settings.Image,
 			Time = Settings.Time
 		})
-	elseif Options.NotifyStyle.Value == "STX" then
-		local Sound = Instance.new("Sound", HiddenContainer)
-		Sound.SoundId = "rbxassetid://4590657391"
-		Sound.Volume = (Toggles.NotifyPlaySound and Toggles.NotifyPlaySound.Value and Options.NotifySoundVolume.Value) or (Toggles.NotifyPlaySound and 0 or 3)
-		Sound.PlayOnRemove = true
-		Sound:Destroy()
-
-		if Settings.Image then
-			Globals.STX:Notify(
-				{Title = "BlackKing Hub", Description = Settings.Title .. "\n" .. Settings.Body},
-				{OutlineColor = Library.Scheme.AccentColor,Time = Settings.Time or 5, Type = "image"},
-				{Image = Settings.Image, ImageColor = Color3.fromRGB(255, 255, 255)}
-			)
-		else
-			Globals.STX:Notify(
-				{Title = "BlackKing Hub", Description = Settings.Title .. "\n" .. Settings.Body},
-				{OutlineColor = Library.Scheme.AccentColor,Time = Settings.Time or 5, Type = "default"}
-			)
-		end
-	else
-		local Sound = Instance.new("Sound", HiddenContainer)
-		Sound.SoundId = "rbxassetid://4590662766"
-		Sound.Volume = (Toggles.NotifyPlaySound and Toggles.NotifyPlaySound.Value and Options.NotifySoundVolume.Value) or (Toggles.NotifyPlaySound and 0 or 3)
-		Sound.PlayOnRemove = true
-		Sound:Destroy()
-		Library:OldNotify({ Title = Settings.Title, Description = Settings.Body, Time = Settings.Time })
-	end
 end
 
 Functions.Caption = function(Text, PlaySound)
@@ -1347,7 +1321,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
 	Tooltip = "Completely disables the anticheat, after interacting with a ladder."
 })
 Groupboxes.Exploits_BypassRight:AddToggle("VelocityManipulationToggle", {
-	Text = "Velocity Manipulation", Default = false,
+	Text = "Teleport Manipulation", Default = false,
 	Tooltip = "Moves your character forward slowly, mitigating the game's anti-noclip."
 })
 Toggles.DisableAnticheat:OnChanged(function(Value)
@@ -1357,11 +1331,11 @@ Toggles.DisableAnticheat:OnChanged(function(Value)
 	end
 end)
 Toggles.VelocityManipulationToggle:AddKeyPicker("VelocityManipulationKeybind", {
-	Text = "Velocity Manipulation", Default = "V",
+	Text = "Teleport Manipulation", Default = "V",
 	Mode = Library.IsMobile and "Toggle" or "Hold", SyncToggleState = true
 })
 Groupboxes.Exploits_BypassRight:AddDropdown("VelocityManipulationMode", {
-	Values = {"Velocity", "Pivot"}, Text = "Manipulation Method",
+	Values = {"Pivot", "Velocity"}, Text = "Manipulation Method",
 	Default = 1,
 })
 
