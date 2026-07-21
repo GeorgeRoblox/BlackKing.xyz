@@ -1,4 +1,4 @@
-local LoadStart = tick() --yes
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -490,50 +490,45 @@ end)
 		Default = false,
 	})
 
-
-local Players = game:GetService("Players")
+	local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-
-local HitParts = {
-    "RightUpperLeg",
-    "LeftUpperLeg",
-    "HeadHB",
-    "HumanoidRootPart"
-}
-
-local HitboxSize = Vector3.new(13, 13, 13)
-local DefaultSize = Vector3.new(2, 2, 1)
 
 local HitboxRunning = false
 local HitboxThread = nil
 
-local function ResizePart(part, size)
-    local cf = part.CFrame
-    part.Size = size
-    part.CanCollide = false
-    part.Transparency = 1
-    part.CFrame = cf
+local HitboxSize = Vector3.new(13, 13, 13)
+
+local function CreateHitbox(player)
+    if player == LocalPlayer then return end
+    if not player.Character then return end
+
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    if hrp:FindFirstChild("SilentHB") then return end
+
+    local hb = Instance.new("Part")
+    hb.Name = "SilentHB"
+    hb.Size = HitboxSize
+    hb.Transparency = 1
+    hb.CanCollide = false
+    hb.Anchored = false
+    hb.Massless = true
+    hb.Parent = hrp
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = hb
+    weld.Part1 = hrp
+    weld.Parent = hb
 end
 
-local function ResetPart(part)
-    local cf = part.CFrame
-    part.Size = DefaultSize
-    part.CanCollide = false
-    part.Transparency = 0
-    part.CFrame = cf
-end
+local function RemoveHitbox(player)
+    if not player.Character then return end
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
 
-local function ResetAllPlayers()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            for _, partName in ipairs(HitParts) do
-                local part = player.Character:FindFirstChild(partName)
-                if part then
-                    ResetPart(part)
-                end
-            end
-        end
-    end
+    local hb = hrp:FindFirstChild("SilentHB")
+    if hb then hb:Destroy() end
 end
 
 vslt:AddToggle("SAim", {
@@ -547,25 +542,21 @@ vslt:AddToggle("SAim", {
             HitboxThread = task.spawn(function()
                 while HitboxRunning do
                     for _, player in ipairs(Players:GetPlayers()) do
-                        if player ~= LocalPlayer and player.Character then
-                            for _, partName in ipairs(HitParts) do
-                                local part = player.Character:FindFirstChild(partName)
-                                if part then
-                                    ResizePart(part, HitboxSize)
-                                end
-                            end
-                        end
+                        CreateHitbox(player)
                     end
-                    task.wait(0.1)
+                    task.wait(0.2)
                 end
             end)
 
         else
-            ResetAllPlayers()
+            for _, player in ipairs(Players:GetPlayers()) do
+                RemoveHitbox(player)
+            end
             HitboxThread = nil
         end
     end
 })
+
 
 	vslt:AddToggle("EnableTeamCheck", {
 		Text = "Enable Team Check",
@@ -711,9 +702,13 @@ vslt:AddToggle("SAim", {
 	end)
 Library:OnUnload(function()
 
-    HitboxRunning = false
-    HitboxThread = nil
-    ResetAllPlayers()
+HitboxRunning = false
+HitboxThread = nil
+
+for _, player in ipairs(Players:GetPlayers()) do
+    RemoveHitbox(player)
+end
+
 
     notify("BlackKing", {
         Title = "Upio",
