@@ -2,6 +2,6 @@ local BaseUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/re
 if game.PlaceId ~= 6516141723 then
     loadstring(game:HttpGet(BaseUrl .. "Games/Doors/Main.luau"))()
 else
-print("doors lobby")
     loadstring(game:HttpGet(BaseUrl .. "Games/Doors/Lobby.luau"))()
+print("doors lobby")
 end
