@@ -1,4 +1,4 @@
-local LoadStart = tick() -- yas
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -466,7 +466,7 @@ Globals.DoorsNotify = function(NotifyOptions)
 	end)
 end
 
-Globals.STX = loadstring(game:HttpGet("https://raw.githubusercontent.com/bocaj111004/BlackKing/refs/heads/main/Components/STX.luau"))()
+Globals.STX = print("a")
 Functions.Notify = function(Settings)
 	local HiddenContainer = GetHiddenContainer()
 
