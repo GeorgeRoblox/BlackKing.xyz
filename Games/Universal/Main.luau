@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --yes
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -494,57 +494,75 @@ end)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local HitboxSize = Vector3.new(15, 15, 15)
+local HitParts = {
+    "RightUpperLeg",
+    "LeftUpperLeg",
+    "HeadHB",
+    "HumanoidRootPart"
+}
+
+local HitboxSize = Vector3.new(13, 13, 13)
 local DefaultSize = Vector3.new(2, 2, 1)
 
 local HitboxRunning = false
 local HitboxThread = nil
 
-local function ResizeCharacter(player, size)
-    if player == LocalPlayer then return end
-
-    local char = player.Character
-    if not char then return end
-
-    local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("HRP")
-    if not hrp then return end
-
-    local cf = hrp.CFrame
-    hrp.Size = size
-    hrp.CanCollide = false
-    hrp.Massless = false
-    hrp.CFrame = cf
+local function ResizePart(part, size)
+    local cf = part.CFrame
+    part.Size = size
+    part.CanCollide = false
+    part.Transparency = 1
+    part.CFrame = cf
 end
 
+local function ResetPart(part)
+    local cf = part.CFrame
+    part.Size = DefaultSize
+    part.CanCollide = false
+    part.Transparency = 0
+    part.CFrame = cf
+end
+
+local function ResetAllPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            for _, partName in ipairs(HitParts) do
+                local part = player.Character:FindFirstChild(partName)
+                if part then
+                    ResetPart(part)
+                end
+            end
+        end
+    end
+end
 
 vslt:AddToggle("SAim", {
     Text = "SilentAim",
     Default = false,
     Callback = function(Value)
 
+        HitboxRunning = Value
+
         if Value then
-            HitboxRunning = true
-
-            for _, player in ipairs(Players:GetPlayers()) do
-                ResizeCharacter(player, HitboxSize)
-            end
-
             HitboxThread = task.spawn(function()
                 while HitboxRunning do
                     for _, player in ipairs(Players:GetPlayers()) do
-                        ResizeCharacter(player, HitboxSize)
+                        if player ~= LocalPlayer and player.Character then
+                            for _, partName in ipairs(HitParts) do
+                                local part = player.Character:FindFirstChild(partName)
+                                if part then
+                                    ResizePart(part, HitboxSize)
+                                end
+                            end
+                        end
                     end
                     task.wait(0.1)
                 end
             end)
 
         else
-            HitboxRunning = false
+            ResetAllPlayers()
             HitboxThread = nil
-
-            for _, player in ipairs(Players:GetPlayers()) do
-                ResizeCharacter(player, DefaultSize)
-            end
         end
     end
 })
@@ -692,6 +710,11 @@ vslt:AddToggle("SAim", {
 		end
 	end)
 Library:OnUnload(function()
+
+    HitboxRunning = false
+    HitboxThread = nil
+    ResetAllPlayers()
+
     notify("BlackKing", {
         Title = "Upio",
         Description = "Unloading BlackKing...",
@@ -735,37 +758,11 @@ Library:OnUnload(function()
         addonLoaded = false
     end)
 
-pcall(function()
-    HitboxRunning = false
-    HitboxThread = nil
-
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            local char = player.Character
-            if char then
-                local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("HRP")
-                if hrp then
-                    local cf = hrp.CFrame
-                    hrp.Size = Vector3.new(2, 2, 1)
-                    hrp.CanCollide = true
-                    hrp.Massless = false
-                    hrp.CFrame = cf
-                end
-            end
-        end
-    end
-end)
-
-
     pcall(function()
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
             Player.Character.Humanoid.WalkSpeed = 16
         end
     end)
-
 
     ESPLibrary:Unload()
     getgenv().BlackKing = nil
