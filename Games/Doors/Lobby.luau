@@ -1,10 +1,10 @@
-local LoadStart = tick() -- ays
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Lobby"
-print("valid")
+
 local Library = BlackKing.Interface.Library
 local SaveManager = BlackKing.Interface.SaveManager
 local ThemeManager = BlackKing.Interface.ThemeManager
-print("invlid")
+
 local Toggles = Library.Toggles
 local Options = Library.Options
 
@@ -61,24 +61,10 @@ Fs.CheckCompatability = function(Array)
     return Valid
 end
 
-local function GetHiddenContainer()
-	if Fs.CheckCompatability({"gethui"}) then
-		return BlackKing.Environment.gethui()
-	else
-		return Services.CoreGui
-	end
-end
-
 local NotificationLibrary = {
 	LiveNotifications = 0,
     Notifications = 1
 }
-
-local Container = Instance.new("ScreenGui")
-Container.Name = BlackKing.ESPLibrary:GenerateRandomString()
-Container.Parent = GetHiddenContainer()
-Container.DisplayOrder = 32767
-Container.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 if not Library.Scheme then
     Library.Scheme = setmetatable({}, {
