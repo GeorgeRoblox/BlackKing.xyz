@@ -1,4 +1,4 @@
-local LoadStart = tick() -- yes
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Lobby"
 
 local Library = BlackKing.Interface.Library
@@ -36,8 +36,8 @@ end
 task.wait(1)
 
 local Window = Library:CreateWindow({
-    Title = "BlackKing Hub",
-    Footer = "dsc.gg/BlackKinghub",
+    Title = "BlackKing",
+    Footer = "dsc.gg/BlackKing",
     NotifySide = "Right",
     ShowCustomCursor = false,
     AutoShow = true,
@@ -70,13 +70,6 @@ local function GetHiddenContainer()
 	end
 end
 
-
-local Container = Instance.new("ScreenGui")
-Container.Name = BlackKing.ESPLibrary:GenerateRandomString()
-Container.Parent = GetHiddenContainer()
-Container.DisplayOrder = 32767
-Container.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
 if not Library.Scheme then
     Library.Scheme = setmetatable({}, {
         __index = function(self, Name)
@@ -84,20 +77,6 @@ if not Library.Scheme then
         end
     })
 end
-
-    local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
-
-George = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/George.jpg"
-Upio = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Upio.png"
-FireBacon = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/FireBacon.jpg"
-
-notify("BlackKing", {
-	Title = "Upio",
-	Description = "MSPAINT MSPAINT MSPAINT MSPAINT MSPAINT MSPAINT",
-	Image = Upio,
-	Color = Color3.fromRGB(255, 222, 189),
-	Time = 5
-})
 
 Functions.CheckElevators = function()
     local TargetFound = false
@@ -193,7 +172,6 @@ Groupboxes.General_Automation:AddButton("Redeem All Codes", function()
         return
     end
 
-    Functions.Notify({Title = "Redeeming " .. #Globals.CodesList .. " codes.", Body = "Please wait."})
     Globals.RedeemingCodes = true
     for Index, Code in pairs(Globals.CodesList) do
         RemotesFolder.ShopCode:FireServer(Code)
@@ -443,20 +421,6 @@ Groupboxes.General_QuickPlay:AddButton({
 Library:OnUnload(function()
     Connections.MainConnection:Disconnect()
 	getgenv().BlackKing = nil
-	notify("BlackKing", {
-	Title = "Upio",
-	Description = "Successfully Unloaded BlackKing..."
-	Image = Upio,
-	Color = Color3.fromRGB(255, 222, 189),
-	Time = 5
-})
 end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
-notify("BlackKing", {
-	Title = "Upio",
-	Description = "Successfully loaded in " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. " seconds. Press '" .. tostring(Options.MenuKeybind.Value) .. "' to toggle the UI.",
-	Image = Upio,
-	Color = Color3.fromRGB(255, 222, 189),
-	Time = 5
-})
