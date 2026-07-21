@@ -70,10 +70,6 @@ local function GetHiddenContainer()
 	end
 end
 
-local NotificationLibrary = {
-	LiveNotifications = 0,
-    Notifications = 1
-}
 
 local Container = Instance.new("ScreenGui")
 Container.Name = BlackKing.ESPLibrary:GenerateRandomString()
@@ -89,116 +85,19 @@ if not Library.Scheme then
     })
 end
 
-function NotificationLibrary:Notify(TitleText, Desc, Delay)
-	task.spawn(function()
-		local Notification = Instance.new("Frame")
-		local Line = Instance.new("Frame")
-		local Warning = Instance.new("ImageLabel")
-		local UICorner = Instance.new("UICorner")
-        local UICorner2 = Instance.new("UICorner")
-		local Title = Instance.new("TextLabel")
-		local Description = Instance.new("TextLabel")
+    local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
 
-		Notification.Name = "Notification"
-		Notification.Parent = Container
-		Notification.BackgroundColor3 = Library.Scheme.BackgroundColor
-		Notification.BackgroundTransparency = 0.4
-		Notification.BorderSizePixel = 0
-		Notification.Position = UDim2.new(1, 5, 0, 60 + (60 * NotificationLibrary.LiveNotifications))
-		Notification.Size = UDim2.new(0, 420, 0, 50)
-        Notification:SetAttribute("ID", NotificationLibrary.Notifications)
-        Notification:SetAttribute("CurrentPosition", Notification.Position)
+George = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/George.jpg"
+Upio = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Upio.png"
+FireBacon = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/FireBacon.jpg"
 
-		Line.Name = "Line"
-		Line.Parent = Notification
-		Line.BackgroundColor3 = Library.Scheme.AccentColor
-		Line.BorderSizePixel = 0
-		Line.Position = UDim2.new(0, 0, 1, -3)
-		Line.Size = UDim2.new(0, 0, 0, 3)
-
-		Warning.Name = "Warning"
-		Warning.Parent = Notification
-		Warning.BackgroundTransparency = 1
-		Warning.Position = UDim2.new(0, 10, 0, 5)
-		Warning.Size = UDim2.new(0, 40, 0, 40)
-		Warning.Image = "rbxassetid://3944668821"
-		Warning.ImageColor3 = Library.Scheme.AccentColor
-		Warning.ScaleType = Enum.ScaleType.Fit
-
-		UICorner.CornerRadius = UDim.new(0, 20)
-		UICorner.Parent = Warning
-
-        UICorner2.CornerRadius = UDim.new(0, 4)
-        UICorner2.Parent = Notification
-
-		Title.Name = "Title"
-		Title.Parent = Notification
-		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Title.BackgroundTransparency = 1.000
-		Title.Position = UDim2.new(0, 60, 0.155, 0)
-		Title.Size = UDim2.new(0, 205, 0, 15)
-		Title.Text = TitleText or "..."
-		Title.TextColor3 = Library.Scheme.FontColor
-		Title.TextSize = 10
-		Title.TextStrokeTransparency = 0.75
-		Title.TextXAlignment = Enum.TextXAlignment.Left
-
-		Description.Name = "Description"
-		Description.Parent = Notification
-		Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Description.BackgroundTransparency = 1.000
-		Description.Position = UDim2.new(0, 60, 0.483, 0)
-		Description.Size = UDim2.new(0, 205, 0, 18)
-		Description.Text = Desc or "..."
-		Description.TextColor3 = Library.Scheme.FontColor
-        Description.TextTransparency = 0.1
-		Description.TextSize = 10
-		Description.TextStrokeTransparency = 0.75
-		Description.TextXAlignment = Enum.TextXAlignment.Left
-		
-		NotificationLibrary.LiveNotifications = NotificationLibrary.LiveNotifications + 1
-        NotificationLibrary.Notifications = NotificationLibrary.Notifications + 1
-		Services.TweenService:Create(Notification, TweenInfo.new(1, Enum.EasingStyle.Exponential), {Position = UDim2.new(1, -370, 0, Notification.Position.Y.Offset)}):Play()
-
-		task.wait(0.25)
-		Services.TweenService:Create(Line, TweenInfo.new(Delay - 0.25, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 400, 0, 3)}):Play()
-		task.wait(Delay - 0.25)
-
-        Notification:SetAttribute("Destroying", true)
-		Services.TweenService:Create(Notification, TweenInfo.new(0.75, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Position = UDim2.new(1, 5, 0, Notification.Position.Y.Offset)}):Play()
-		NotificationLibrary.LiveNotifications = NotificationLibrary.LiveNotifications - 1
-        
-        for Index, Object in pairs(Container:GetChildren()) do
-            if Object.Name == "Notification" and Object:GetAttribute("ID") and Object:GetAttribute("ID") > Notification:GetAttribute("ID") and Object:GetAttribute("Destroying") ~= true and Object.Position.Y.Offset ~= 60 then
-                Object:SetAttribute("CurrentPosition", UDim2.new(1, -450, 0, Object:GetAttribute("CurrentPosition").Y.Offset - 60))
-                Services.TweenService:Create(Object, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut), {Position = UDim2.new(1, -370, 0, Object:GetAttribute("CurrentPosition").Y.Offset)}):Play()
-            end
-        end
-        task.wait(0.75)
-		Notification:Destroy()
-	end)
-end
-
-Functions.Notify = function(Settings)
-    local Container
-    if Functions.CheckCompatability({"gethui"}) then
-        Container = BlackKing.Environment.gethui()
-    else
-        Container = Services.CoreGui
-    end
-
-    local Sound = Instance.new("Sound", Container)
-    Sound.SoundId = "rbxassetid://8784885431"
-    Sound.Volume = 3
-    Sound.PlayOnRemove = true
-    Sound:Destroy()
-
-    NotificationLibrary:Notify(Settings.Title, Settings.Body, Settings.Time or 5)
-end
-
-Library.Notify = function(Data, Body, Time)
-    Functions.Notify({Title = Body, Time = Time or 5})
-end
+notify("BlackKing", {
+	Title = "Upio",
+	Description = "MSPAINT MSPAINT MSPAINT MSPAINT MSPAINT MSPAINT",
+	Image = Upio,
+	Color = Color3.fromRGB(255, 222, 189),
+	Time = 5
+})
 
 Functions.CheckElevators = function()
     local TargetFound = false
@@ -547,4 +446,3 @@ Library:OnUnload(function()
 end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
-Functions.Notify({ Title = "Successfully loaded in " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. " seconds." , Body = "Press '" .. tostring(Options.MenuKeybind.Value) .. "' to toggle the UI."})
