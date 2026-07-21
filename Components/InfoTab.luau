@@ -1,6 +1,6 @@
 return function(Window)
 	local LatestChangelog = {
-		"11/7/2026",
+		"21/7/2026",
 		"<font color='rgb(0, 255, 0)'>+ New Version of BlackKing And the final one</font>",
 	}
 
