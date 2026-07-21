@@ -22,6 +22,12 @@ local Services = setmetatable({}, {
     end
 })
 
+    local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
+
+George = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/George.jpg"
+Upio = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Upio.png"
+FireBacon = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/FireBacon.jpg"
+
 local Groupboxes = {}
 local Globals = {}
 local Connections = {}
@@ -424,3 +430,10 @@ Library:OnUnload(function()
 end)
 
 BlackKing.Interface.ApplySettingsTab(Window)
+notify("BlackKing", {
+	Title = "Upio",
+	Description = "BlackKing is Succesfully loaded. Took " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. "Seconds",
+	Image = Upio,
+	Color = Color3.fromRGB(255, 222, 189),
+	Time = 5
+})
