@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Lobby"
 
 local Library = BlackKing.Interface.Library
@@ -22,6 +22,7 @@ local Services = setmetatable({}, {
     end
 })
 
+local Gb = {}
 local Globals = {}
 local Connections = {}
 local Functions = {}
@@ -153,30 +154,30 @@ Globals.CodesList = {
 }
 Globals.UnlockedBadges = {}
 
-General_Self = Tabs.General:AddLeftGroupbox("Self")
+Gb.General_Self = Tabs.General:AddLeftGroupbox("Self")
 
-General_Self:AddToggle("AutoJoinElevator", {
+Gb.General_Self:AddToggle("AutoJoinElevator", {
     Text = "Auto Join Elevator",
     Default = false,
     Tooltip = "Automatically joins the selected player's elevator."
 })
 
-General_Self:AddDropdown("AutoJoinElevatorTarget", {
+Gb.General_Self:AddDropdown("AutoJoinElevatorTarget", {
     Text = "Target",
     SpecialType = "Player",
     ExcludeLocalPlayer = true,
     Searchable = true
 })
 
-General_Automation = Tabs.General:AddLeftGroupbox("Automation")
+Gb.General_Automation = Tabs.General:AddLeftGroupbox("Automation")
 
-General_Automation:AddToggle("CycleAchievements", {
+Gb.General_Automation:AddToggle("CycleAchievements", {
     Text = "Cycle Achievements",
     Default = false,
     Tooltip = "Rapidly equips a random badge."
 })
 
-General_Automation:AddSlider("CycleAchievementsDelay", {
+Gb.General_Automation:AddSlider("CycleAchievementsDelay", {
     Text = "Cycle Delay",
     Min = 0,
     Max = 1,
@@ -185,9 +186,9 @@ General_Automation:AddSlider("CycleAchievementsDelay", {
     Compact = true
 })
 
-General_Automation:AddDivider()
+Gb.General_Automation:AddDivider()
 
-General_Automation:AddButton("Redeem All Codes", function()
+Gb.General_Automation:AddButton("Redeem All Codes", function()
     if Globals.RedeemingCodes then
         return
     end
@@ -245,9 +246,9 @@ Connections.MainConnection = Services.RunService.Heartbeat:Connect(function()
 	end
 end)
 
-General_QuickPlay = Tabs.General:AddRightGroupbox("Quick Play")
+Gb.General_QuickPlay = Tabs.General:AddRightGroupbox("Quick Play")
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "The Hotel",
 	DoubleClick = false,
 	Func = function()
@@ -261,7 +262,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "The Mines",
 	DoubleClick = false,
 	Func = function()
@@ -275,7 +276,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "The Backdoor",
 	DoubleClick = false,
 	Func = function()
@@ -289,7 +290,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "The Rooms",
 	DoubleClick = false,
 	Func = function()
@@ -303,7 +304,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "The Outdoors",
 	DoubleClick = false,
 	Func = function()
@@ -317,9 +318,9 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddDivider()
+Gb.General_QuickPlay:AddDivider()
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Battle Mode",
 	DoubleClick = false,
 	Func = function()
@@ -333,7 +334,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Retro Mode",
 	DoubleClick = false,
 	Func = function()
@@ -347,7 +348,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Rush Mode",
 	DoubleClick = false,
 	Func = function()
@@ -361,9 +362,9 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddDivider()
+Gb.General_QuickPlay:AddDivider()
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Halloween",
 	DoubleClick = false,
 	Func = function()
@@ -377,7 +378,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Hotel-",
 	DoubleClick = false,
 	Func = function()
@@ -391,7 +392,7 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
+Gb.General_QuickPlay:AddButton({
 	Text = "Super Hard Mode",
 	DoubleClick = false,
 	Func = function()
@@ -405,10 +406,10 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddDivider()
+Gb.General_QuickPlay:AddDivider()
 
-General_QuickPlay:AddButton({
-	Text = "The Rooms [Free, No Progress]",
+Gb.General_QuickPlay:AddButton({
+	Text = "The Rooms [Free No Progress]",
 	DoubleClick = false,
 	Func = function()
 		RemotesFolder.CreateElevator:FireServer({
@@ -423,8 +424,8 @@ General_QuickPlay:AddButton({
 	end
 })
 
-General_QuickPlay:AddButton({
-	Text = "The Outdoors [Free, No Progress]",
+Gb.General_QuickPlay:AddButton({
+	Text = "The Outdoors [Free No Progress]",
 	DoubleClick = false,
 	Func = function()
 		RemotesFolder.CreateElevator:FireServer({
