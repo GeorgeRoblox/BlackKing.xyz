@@ -1,10 +1,10 @@
 local LoadStart = tick() -- ays
 BlackKing.SavePath = "Doors/Lobby"
-
+print("valid")
 local Library = BlackKing.Interface.Library
 local SaveManager = BlackKing.Interface.SaveManager
 local ThemeManager = BlackKing.Interface.ThemeManager
-
+print("invlid")
 local Toggles = Library.Toggles
 local Options = Library.Options
 
