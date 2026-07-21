@@ -10,7 +10,7 @@ local Interface = {
   ApplyInfoTab = loadstring(game:HttpGet(BlackKingUrl .. "Components/InfoTab.luau"))(),
   ApplySettingsTab = loadstring(game:HttpGet(BlackKingUrl .. "Components/SettingsTab.luau"))()
 }
-print("dig")
+
 Interface.ThemeManager.BuiltInThemes = {
 		["BlackKing"]      = { 1,  { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "001aff", BackgroundColor = "1a1a1a", OutlineColor = "1a1b1d" } },
 		["BBot"]           = { 2,  { FontColor = "ffffff", MainColor = "1e1e1e", AccentColor = "7e48a3", BackgroundColor = "232323", OutlineColor = "141414" } },
