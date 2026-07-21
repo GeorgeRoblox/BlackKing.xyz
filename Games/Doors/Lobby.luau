@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- ays
 BlackKing.SavePath = "Doors/Lobby"
 
 local Library = BlackKing.Interface.Library
@@ -61,10 +61,6 @@ Fs.CheckCompatability = function(Array)
     return Valid
 end
 
-local NotificationLibrary = {
-	LiveNotifications = 0,
-    Notifications = 1
-}
 
 if not Library.Scheme then
     Library.Scheme = setmetatable({}, {
