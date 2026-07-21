@@ -1,4 +1,4 @@
-local LoadStart = tick() --yes
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -337,7 +337,7 @@ Globals.DoorsNotify = function(NotifyOptions)
 		Achievement:Destroy()
 	end)
 end
-
+ local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
 Functions.Notify = function(Settings)
     local HiddenContainer = GetHiddenContainer()
 
