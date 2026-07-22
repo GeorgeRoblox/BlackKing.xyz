@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -1027,7 +1027,7 @@ Groupboxes.Self_Automation:AddDropdown("AutoClosetEntityList", {
 	Multi = true, AllowNull = true
 })
 
-Groupboxes.Self_Misc = Tabs.General:AddRightGroupbox("Miscellaneous")
+Groupboxes.Self_Misc = Tabs.General:AddRightGroupbox("Mics")
 Groupboxes.Self_Misc:AddButton({
 	Text = "Play Again", Tooltip = "Makes you join a new run, click again to cancel.", DoubleClick = true,
 	Func = function() RemotesFolder.PlayAgain:FireServer() end
@@ -3025,13 +3025,11 @@ Functions.HandleObject = function(Object)
 		table.insert(Objects.Obstructions, Object)
 	elseif Name == "ElevatorBreaker" then
 		if Toggles.AutoBreakerBox.Value and not Globals.BreakerBoxNotified then
-			Functions.Notify({ Title = "Interact with the breaker box.", Body = "It will be automatically solved.", Image = George })
 			Globals.BreakerBoxNotified = true
 		end
 		Connections.BreakerConnection = Object:WaitForChild("SurfaceGui").Frame.Code:GetPropertyChangedSignal("Text"):Connect(function()
 			if Toggles.AutoBreakerBox.Value then
 				if not Globals.BreakerBoxStartNotified and (Floor == "Fools" or Floor == "OldHotel") then
-					Functions.Notify({ Title = "Attempting to solve the breaker box.", Body = "Please wait.", Image = George })
 					Globals.BreakerBoxStartNotified = true
 				end
 				RemotesFolder.EBF:FireServer()
@@ -3041,7 +3039,6 @@ Functions.HandleObject = function(Object)
 	elseif Name == "ElevatorCar" then
 		local ElevConn = Object.DescendantAdded:Connect(function(Desc)
 			if Toggles.AutoBreakerBox.Value and Desc.Name == "TouchInterest" and not Globals.BreakerBoxFinishedNotified then
-				Functions.Notify({ Title = "Successfully solved the breaker box.", Body = "Try going to the elevator!", Image = George })
 				Globals.BreakerBoxFinishedNotified = true
 			end
 		end)
