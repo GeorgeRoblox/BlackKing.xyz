@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -920,7 +920,7 @@ Toggles.EnableCharacterSlide:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Self")
+Groupboxes.General_Self = Tabs.General:AddLeftGroupbox("Player")
 Groupboxes.General_Self:AddToggle("DoorReachToggle", {
 	Text = "Door Reach", Default = false, Tooltip = "Allows you to open doors from further away."
 })
@@ -1341,7 +1341,7 @@ Toggles.RemoveDread:OnChanged(function(Value)
 	end
 end)
 
-Groupboxes.Exploits_Audio = Tabs.Exploits:AddLeftGroupbox("Audio")
+Groupboxes.Exploits_Audio = Tabs.Exploits:AddLeftGroupbox("Mics")
 Globals.JamMuffle = Services.SoundService:WaitForChild("Main"):FindFirstChild("Jamming") or Instance.new("EqualizerSoundEffect")
 
 Groupboxes.Exploits_Audio:AddToggle("RemoveJamminMusic",       { Text = "Remove Jammin Music",       Default = false, Tooltip = "Removes the music and muffle effect from the 'Jammin' modifier." })
@@ -1442,7 +1442,6 @@ Groupboxes.Visuals_Effects:AddToggle("DisableVoidJumpscare",     { Text = "Disab
 Groupboxes.Visuals_Effects:AddDivider()
 Groupboxes.Visuals_Effects:AddToggle("DisableHideVignette",      { Text = "Disable Hide Vignette",      Default = false, Tooltip = "Disables the hiding screen effect." })
 Groupboxes.Visuals_Effects:AddToggle("DisableFiredampEffect",    { Text = "Disable Firedamp Effect",    Default = false, Tooltip = "Disables the firedamp screen effect." })
-Groupboxes.Visuals_Effects:AddToggle("DisableEntityJumpscares",  { Text = "Disable Entity Jumpscares",  Default = false, Tooltip = "Disables jumpscares from entities like Rush and Ambush." })
 
 Toggles.DisableGlitchJumpscare:OnChanged(function(Value)
 	Modules.Glitch.Name = Value and "Glitch_Disabled" or "Glitch"
@@ -1472,16 +1471,6 @@ Toggles.DisableFiredampEffect:OnChanged(function(Value)
 	LocalPlayer:SetAttribute("CurrentRoom", 0)
 	task.wait()
 	LocalPlayer:SetAttribute("CurrentRoom", Old)
-end)
-Toggles.DisableEntityJumpscares:OnChanged(function(Value)
-	local Jumpscares = Globals.MainUI.Initiator.Main_Game.RemoteListener:FindFirstChild("Jumpscares")
-		or Globals.MainUI.Initiator.Main_Game.RemoteListener:FindFirstChild("Jumpscares_Disabled")
-	if Jumpscares then
-		Jumpscares.Name = Value and "Jumpscares_Disabled" or "Jumpscares"
-		for _, Object in Objects.JumpscareModules do
-			Object.Name = Value and (Object:GetAttribute("OriginalName") .. "_Disabled") or Object:GetAttribute("OriginalName")
-		end
-	end
 end)
 
 Groupboxes.Visuals_RightTab     = Tabs.Visuals:AddRightTabbox("Entities / Settings")
@@ -1641,7 +1630,7 @@ local NodeEntities = {
 
 Toggles.DoorESPToggle:OnChanged(function(Value)
 	for _, Object in Objects.Doors do
-		if Value then Functions.AddESP({ Object = Object, Text = "Door " .. Functions.GetDoorNumber(Object), Color = Options.DoorESPColor.Value }, true)
+		if Value then Functions.AddESP({ Object = Object, Text = "Door " "[ ".. Functions.GetDoorNumber(Object) .. " ]", Color = Options.DoorESPColor.Value }, true)
 		else Functions.RemoveESP(Object) end
 	end
 end)
@@ -2077,10 +2066,6 @@ Functions.HandleCharacter = function(NewCharacter)
 		local Vignette = Globals.MainUI:FindFirstChild("HideVignette") or Globals.MainUI.MainFrame:FindFirstChild("HideVignette")
 		if Vignette then Vignette.Image = "Disabled" end
 	end
-	if Toggles.DisableEntityJumpscares.Value then
-		local JS = Globals.MainUI.Initiator.Main_Game.RemoteListener:FindFirstChild("Jumpscares")
-		if JS then JS.Name = "Jumpscares_Disabled" end
-end
 	CustomPhysics = PhysicalProperties.new(
 		100,
 		RootPart.CustomPhysicalProperties.Friction,
@@ -3508,13 +3493,6 @@ Connections.FloorReplicatedHandler = FloorReplicated.DescendantAdded:Connect(fun
 	if Object.Name == "GlitchScreech" then
 		Modules.GlitchScreech = Object
 		if Toggles.RemoveScreech.Value then Object.Name = "GlitchScreech_Disabled" end
-	end
-	if Object.Name:find("Jumpscare") and Object:IsA("ModuleScript")
-		and not Object.Name:find("Eyestalk") and not Object.Name:find("Groundskeeper") and not Object.Name:find("Monument")
-	then
-		Object:SetAttribute("OriginalName", Object.Name)
-		if Toggles.DisableEntityJumpscares.Value then Object.Name = Object.Name .. "_Disabled" end
-		table.insert(Objects.JumpscareModules, Object)
 	end
 end)
 
