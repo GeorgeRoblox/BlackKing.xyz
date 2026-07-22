@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- b
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -337,7 +337,7 @@ Globals.DoorsNotify = function(NotifyOptions)
 		Achievement:Destroy()
 	end)
 end
- local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Rhyans-notification/refs/heads/main/Notification20%25yes.lua"))()
+local notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Source.lua"))()
 Functions.Notify = function(Settings)
     local HiddenContainer = GetHiddenContainer()
 
@@ -355,7 +355,6 @@ Functions.Notify = function(Settings)
                 EntityName = Index
             end
         end
-
         notify("BlackKing", {
             Title = Settings.Title,
             Description = Settings.Body,
@@ -363,7 +362,6 @@ Functions.Notify = function(Settings)
             Color = IsEntity and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 222, 189),
             Time = Settings.Time
         })
-
     else
         local Sound = Instance.new("Sound", HiddenContainer)
         Sound.SoundId = "rbxassetid://4590662766"
@@ -1199,7 +1197,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("DisableAnticheat", {
 	Tooltip = "Completely disables the anticheat, after interacting with a ladder."
 })
 Groupboxes.Exploits_BypassRight:AddToggle("VelocityManipulationToggle", {
-	Text = "Velocity Manipulation", Default = false,
+	Text = "Teleport Manipulation", Default = false,
 	Tooltip = "Moves your character forward slowly, mitigating the game's anti-noclip."
 })
 Toggles.DisableAnticheat:OnChanged(function(Value)
@@ -1209,11 +1207,11 @@ Toggles.DisableAnticheat:OnChanged(function(Value)
 	end
 end)
 Toggles.VelocityManipulationToggle:AddKeyPicker("VelocityManipulationKeybind", {
-	Text = "Velocity Manipulation", Default = "V",
+	Text = "Teleport Manipulation", Default = "V",
 	Mode = Library.IsMobile and "Toggle" or "Hold", SyncToggleState = true
 })
 Groupboxes.Exploits_BypassRight:AddDropdown("VelocityManipulationMode", {
-	Values = {"Velocity", "Pivot"}, Text = "Manipulation Method",
+	Values = {"Pivot", "Velocity"}, Text = "Manipulation Method",
 	Default = 1,
 })
 
@@ -1256,10 +1254,26 @@ Toggles.PositionSpoof:AddKeyPicker("PositionSpoof", {
 	Text = "Position Spoof", Default = "B", Mode = "Toggle", SyncToggleState = true
 })
 Toggles.CrouchSpoof:OnChanged(function(Value)
-	if RemotesFolder:FindFirstChild("Crouch") then
-		RemotesFolder.Crouch:FireServer(Value and true or Functions.IsCrouching(), true)
-	end
+    if not Value then
+        if Connections.CrouchSpoofLoop then
+            Connections.CrouchSpoofLoop:Disconnect()
+            Connections.CrouchSpoofLoop = nil
+        end
+        return
+    end
+
+    if RemotesFolder:FindFirstChild("Crouch") then
+        RemotesFolder.Crouch:FireServer(true, true)
+    end
+
+    Connections.CrouchSpoofLoop = game:GetService("RunService").Heartbeat:Connect(function()
+        if RemotesFolder:FindFirstChild("Crouch") then
+            local ShouldCrouch = Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value
+            RemotesFolder.Crouch:FireServer(ShouldCrouch and true or Functions.IsCrouching(), true)
+        end
+    end)
 end)
+
 
 Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("Remove")
 Groupboxes.Exploits_Remove:AddToggle("RemoveScreech", { Text = "Remove Screech",  Default = false, Tooltip = "Prevents 'Screech' from spawning." })
