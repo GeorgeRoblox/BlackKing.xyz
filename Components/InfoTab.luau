@@ -49,7 +49,6 @@ return function(Window)
 
 	local Name, Version = BlackKing.Environment.identifyexecutor()
 	local Executor = InfoTab:AddRightGroupbox("Executor Info")
-	Executor:AddLabel("Test Result: ", true)
 
 	for Index, Result in pairs(BlackKing.Environment.Results) do
 		-- fix for veloshitty 💔
