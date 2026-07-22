@@ -39,7 +39,7 @@ return function(Window)
 		Image = Content
 	})
 
-	User:AddLabel("ID: " .. LocalPlayer.Name, true)
+	User:AddLabel("User: " .. LocalPlayer.Name, true)
 	User:AddLabel("Total Executions: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true)
 
 	local Changelog = InfoTab:AddRightGroupbox("Changelog")
@@ -49,9 +49,6 @@ return function(Window)
 
 	local Name, Version = BlackKing.Environment.identifyexecutor()
 	local Executor = InfoTab:AddRightGroupbox("Executor Info")
-	Executor:AddLabel("Name: " .. Name, true)
-	Executor:AddLabel("Version: " .. (Version and Version or "N/A"), true)
-	Executor:AddDivider()
 	Executor:AddLabel("Test Result: ", true)
 
 	for Index, Result in pairs(BlackKing.Environment.Results) do
