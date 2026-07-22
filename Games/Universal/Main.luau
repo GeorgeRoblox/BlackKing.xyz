@@ -1,4 +1,4 @@
-local LoadStart = tick() --s
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -214,7 +214,6 @@ local LocalPlayer = Players.LocalPlayer
 
 PlayerESPObjects = PlayerESPObjects or {}
 
--- Get team color or fallback
 local function GetTeamColor(plr)
     if plr.Team then
         return plr.TeamColor.Color
@@ -222,7 +221,6 @@ local function GetTeamColor(plr)
     return Color3.fromRGB(255, 255, 255)
 end
 
--- Remove ESP from a player
 local function RemovePlayerESP(plr)
     local esp = PlayerESPObjects[plr]
     if esp and plr.Character then
@@ -231,20 +229,17 @@ local function RemovePlayerESP(plr)
     PlayerESPObjects[plr] = nil
 end
 
--- Remove ESP from all players
 local function ClearPlayerESP()
     for plr in pairs(PlayerESPObjects) do
         RemovePlayerESP(plr)
     end
 end
 
--- Create ESP for a player
 local function CreatePlayerESP(plr)
     if plr == LocalPlayer then return end
     if not Toggles.PlayerESP.Value then return end
     if not plr.Character then return end
 
-    -- Remove old ESP if exists
     RemovePlayerESP(plr)
 
     local espObj = ESPLibrary:AddESP({
@@ -256,17 +251,14 @@ local function CreatePlayerESP(plr)
     PlayerESPObjects[plr] = espObj
 end
 
--- Scan all players
 local function ScanPlayers()
     for _, plr in ipairs(Players:GetPlayers()) do
         CreatePlayerESP(plr)
     end
 end
 
--- Player joined
 Players.PlayerAdded:Connect(function(plr)
 
-    -- Update ESP color when team changes
     plr:GetPropertyChangedSignal("Team"):Connect(function()
         if PlayerESPObjects[plr] then
             ESPLibrary:UpdateObjectColor(plr.Character, GetTeamColor(plr))
@@ -282,7 +274,6 @@ Players.PlayerAdded:Connect(function(plr)
     end)
 end)
 
--- Hook existing players
 for _, plr in ipairs(Players:GetPlayers()) do
 
     plr:GetPropertyChangedSignal("Team"):Connect(function()
@@ -299,13 +290,11 @@ for _, plr in ipairs(Players:GetPlayers()) do
     end)
 end
 
--- Player leaving
 Players.PlayerRemoving:Connect(function(plr)
     RemovePlayerESP(plr)
 end)
 
--- Toggle ESP
-SecTab:AddToggle("PlayerESP", {
+vsrt:AddToggle("PlayerESP", {
     Text    = "Players",
     Default = false,
     Tooltip = "ESP for other players.",
