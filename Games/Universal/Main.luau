@@ -1,4 +1,4 @@
-local LoadStart = tick() -- a
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
