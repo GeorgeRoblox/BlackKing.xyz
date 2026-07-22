@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- a
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -370,8 +370,8 @@ local LocalPlayer = Players.LocalPlayer
 
 local function ClearPlayerESP()
     for plr, espObj in pairs(PlayerESPObjects) do
-        if espObj then
-            ESPLibrary:RemoveESP(espObj)
+        if plr.Character then
+            ESPLibrary:RemoveESP(plr.Character)
         end
     end
     table.clear(PlayerESPObjects)
@@ -391,9 +391,8 @@ local function CreatePlayerESP(plr)
     local char = plr.Character
     if not char then return end
 
-    -- remove old ESP if exists
     if PlayerESPObjects[plr] then
-        ESPLibrary:RemoveESP(PlayerESPObjects[plr])
+        ESPLibrary:RemoveESP(char)
         PlayerESPObjects[plr] = nil
     end
 
@@ -408,19 +407,20 @@ local function CreatePlayerESP(plr)
     PlayerESPObjects[plr] = espObj
 end
 
+
 local function HookCharacter(plr)
     plr.CharacterAdded:Connect(function(char)
         task.wait(0.1)
         CreatePlayerESP(plr)
     end)
 
-    -- remove ESP when character dies
     plr.CharacterRemoving:Connect(function()
-        if PlayerESPObjects[plr] then
-            ESPLibrary:RemoveESP(PlayerESPObjects[plr])
-            PlayerESPObjects[plr] = nil
-        end
-    end)
+    if PlayerESPObjects[plr] then
+        ESPLibrary:RemoveESP(plr.Character)
+        PlayerESPObjects[plr] = nil
+    end
+end)
+
 end
 
 local function HookTeamChange(plr)
@@ -443,7 +443,6 @@ for _, plr in ipairs(Players:GetPlayers()) do
     end
 end
 
--- new players
 Players.PlayerAdded:Connect(function(plr)
     HookCharacter(plr)
     HookTeamChange(plr)
@@ -453,7 +452,7 @@ end)
 
 Players.PlayerRemoving:Connect(function(plr)
     if PlayerESPObjects[plr] then
-        ESPLibrary:RemoveESP(PlayerESPObjects[plr])
+        ESPLibrary:RemoveESP(plr.Character)
         PlayerESPObjects[plr] = nil
     end
 end)
@@ -467,6 +466,10 @@ Toggles.PlayerEsp:OnChanged(function(v)
         end)
 
     else
+        pcall(function()
+            ESPLibrary:Load()
+        end)
+
         for _, plr in ipairs(Players:GetPlayers()) do
             if plr ~= LocalPlayer then
                 CreatePlayerESP(plr)
@@ -496,9 +499,10 @@ vslt:AddSlider("Hitboxsizer", {
 vslt:AddDropdown("AimbotPart", {
     Text = "Aim Part",
     Values = { "HumanoidRootPart", "Head" },
-    Multi = true,
-    AllowNull = true
+    Multi = false,
+    Default = 1,
 })
+
 
 vslt:AddToggle("EnableCircle", {
     Text = "Enable Circle",
@@ -605,15 +609,17 @@ local function GetAimPart(character)
     if not character then return nil end
 
     local selected = Options.AimbotPart.Value
-    if not selected or #selected == 0 then
+    if not selected or selected == "" then
         return character:FindFirstChild("HumanoidRootPart")
     end
+
+    local selectedList = { selected }
 
     local mousePos = UIS:GetMouseLocation()
     local bestPart = nil
     local bestDist = math.huge
 
-    for _, partName in ipairs(selected) do
+    for _, partName in ipairs(selectedList) do
         local part = character:FindFirstChild(partName)
         if part then
             local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
