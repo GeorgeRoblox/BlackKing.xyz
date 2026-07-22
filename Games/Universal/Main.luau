@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- a
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -274,7 +274,7 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
-SecTab:AddToggle("PlayerESP", {
+vsrt:AddToggle("PlayerESP", {
     Text    = "Players",
     Default = false,
     Tooltip = "ESP for other players.",
