@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -461,6 +461,11 @@ end)
 Toggles.PlayerEsp:OnChanged(function(v)
     if not v then
         ClearPlayerESP()
+
+        pcall(function()
+            ESPLibrary:Unload()
+        end)
+
     else
         for _, plr in ipairs(Players:GetPlayers()) do
             if plr ~= LocalPlayer then
@@ -470,168 +475,239 @@ Toggles.PlayerEsp:OnChanged(function(v)
     end
 end)
 
+vslt:AddSlider("FOwaVSIRCLE", {
+    Text = "Circle",
+    Default = 30,
+    Min = 30,
+    Max = 250,
+    Rounding = 0,
+    Compact = true,
+})
 
-	vslt:AddSlider("FOVSIRCLE", {
-		Text = "Circle",
-		Default = 30,
-		Min = 30,
-		Max = 100,
-		Rounding = 0,
-		Compact = true,
-	})
+vslt:AddSlider("Hitboxsizer", {
+    Text = "Hitbox Expander",
+    Default = 0,
+    Min = 0,
+    Max = 50,
+    Rounding = 0,
+    Compact = true,
+})
 
-	vslt:AddToggle("EnableCircle", {
-		Text = "Enable Circle",
-		Default = false,
-	})
+vslt:AddDropdown("AimbotPart", {
+    Text = "Aim Part",
+    Values = { "HumanoidRootPart", "Head" },
+    Multi = true,
+    AllowNull = true
+})
 
-	vslt:AddToggle("EnableCAB", {
-		Text = "Enable Aimbot",
-		Default = false,
-	})
+vslt:AddToggle("EnableCircle", {
+    Text = "Enable Circle",
+    Default = false,
+})
 
-	vslt:AddToggle("EnableTeamCheck", {
-		Text = "Enable Team Check",
-		Default = false,
-	})
+vslt:AddToggle("EnableCAB", {
+    Text = "Enable Aimbot",
+    Default = false,
+})
 
-	vslt:AddToggle("RainbowCircle", {
-		Text = "Rainbow Circle",
-		Default = false,
-	})
+vslt:AddToggle("EnableTeamCheck", {
+    Text = "Enable Team Check",
+    Default = false,
+})
 
-	Aimbot = {
-		Enabled = false,
-		CircleEnabled = false,
-		TeamCheck = false,
-		Rainbow = false,
-		FOV = 30,
-	}
+vslt:AddToggle("RainbowCircle", {
+    Text = "Rainbow Circle",
+    Default = false,
+})
 
-	local Players = game:GetService("Players")
-	local LocalPlayer = Players.LocalPlayer
-	local Camera = workspace.CurrentCamera
-	local UIS = game:GetService("UserInputService")
-	local RunService = game:GetService("RunService")
+Aimbot = {
+    Enabled = false,
+    CircleEnabled = false,
+    TeamCheck = false,
+    Rainbow = false,
+    FOV = 30,
+}
 
-	local Circle = Drawing.new("Circle")
-	Circle.Color = Color3.fromRGB(255, 255, 255)
-	Circle.Thickness = 1
-	Circle.Filled = false
-	Circle.NumSides = 64
-	Circle.Visible = false
-	Circle.Radius = Aimbot.FOV
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
-	local function UpdateFOV(v)
-		Aimbot.FOV = v
-		Circle.Radius = v
-	end
+Connections = Connections or {}
+loadedElements = loadedElements or {}
 
-	local function UpdateCircle(v)
-		Aimbot.CircleEnabled = v
-		Circle.Visible = v
-	end
+local Circle = Drawing.new("Circle")
+Circle.Color = Color3.fromRGB(255, 255, 255)
+Circle.Thickness = 1
+Circle.Filled = false
+Circle.NumSides = 64
+Circle.Visible = false
+Circle.Radius = Aimbot.FOV
 
-	local function UpdateAimbot(v)
-		Aimbot.Enabled = v
-	end
+local function UpdateFOV(v)
+    Aimbot.FOV = v
+    Circle.Radius = v
+end
 
-	local function UpdateTeamCheck(v)
-		Aimbot.TeamCheck = v
-	end
+local function UpdateCircle(v)
+    Aimbot.CircleEnabled = v
+    Circle.Visible = v
+end
 
-	local function UpdateRainbow(v)
-		Aimbot.Rainbow = v
-	end
+local function UpdateAimbot(v)
+    Aimbot.Enabled = v
+end
 
-	Options.FOVSIRCLE:OnChanged(UpdateFOV)
-	Toggles.EnableCircle:OnChanged(UpdateCircle)
-	Toggles.EnableCAB:OnChanged(UpdateAimbot)
-	Toggles.EnableTeamCheck:OnChanged(UpdateTeamCheck)
-	Toggles.RainbowCircle:OnChanged(UpdateRainbow)
+local function UpdateTeamCheck(v)
+    Aimbot.TeamCheck = v
+end
 
-	UpdateFOV(Options.FOVSIRCLE.Value)
-	UpdateCircle(Toggles.EnableCircle.Value)
-	UpdateAimbot(Toggles.EnableCAB.Value)
-	UpdateTeamCheck(Toggles.EnableTeamCheck.Value)
-	UpdateRainbow(Toggles.RainbowCircle.Value)
+local function UpdateRainbow(v)
+    Aimbot.Rainbow = v
+end
 
-	local function IsValidTarget(plr)
-		if plr == LocalPlayer then return false end
-		if not plr.Character then return false end
+Options.FOVSIRCLE:OnChanged(UpdateFOV)
+Toggles.EnableCircle:OnChanged(UpdateCircle)
+Toggles.EnableCAB:OnChanged(UpdateAimbot)
+Toggles.EnableTeamCheck:OnChanged(UpdateTeamCheck)
+Toggles.RainbowCircle:OnChanged(UpdateRainbow)
 
-		local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
-		local hum = plr.Character:FindFirstChild("Humanoid")
-		if not hrp or not hum or hum.Health <= 0 then return false end
+UpdateFOV(Options.FOVSIRCLE.Value)
+UpdateCircle(Toggles.EnableCircle.Value)
+UpdateAimbot(Toggles.EnableCAB.Value)
+UpdateTeamCheck(Toggles.EnableTeamCheck.Value)
+UpdateRainbow(Toggles.RainbowCircle.Value)
 
-		if Aimbot.TeamCheck and plr.Team == LocalPlayer.Team then
-			return false
-		end
+local function UpdateHitbox(v)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                if Aimbot.TeamCheck and plr.Team == LocalPlayer.Team then
+                    hrp.Size = Vector3.new(2, 2, 1)
+                else
+                    if v == 0 then
+                        hrp.Size = Vector3.new(2, 2, 1)
+                    else
+                        hrp.Size = Vector3.new(2 * v, 2 * v, 1 * v)
+                    end
+                end
+            end
+        end
+    end
+end
 
-		return true
-	end
+Options.Hitboxsizer:OnChanged(UpdateHitbox)
+UpdateHitbox(Options.Hitboxsizer.Value)
 
-	local function GetClosest()
-		local closestPart = nil
-		local closestDist = Aimbot.FOV
+local function GetAimPart(character)
+    if not character then return nil end
 
-		for _, plr in ipairs(Players:GetPlayers()) do
-			if IsValidTarget(plr) then
-				local hrp = plr.Character.HumanoidRootPart
-				local screenPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+    local selected = Options.AimbotPart.Value
+    if not selected or #selected == 0 then
+        return character:FindFirstChild("HumanoidRootPart")
+    end
 
-				if onScreen then
-					local mousePos = UIS:GetMouseLocation()
-					local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mousePos.X, mousePos.Y)).Magnitude
+    local mousePos = UIS:GetMouseLocation()
+    local bestPart = nil
+    local bestDist = math.huge
 
-					if dist <= closestDist then
-						closestDist = dist
-						closestPart = hrp
-					end
-				end
-			end
-		end
+    for _, partName in ipairs(selected) do
+        local part = character:FindFirstChild(partName)
+        if part then
+            local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+            if onScreen then
+                local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                if dist < bestDist then
+                    bestDist = dist
+                    bestPart = part
+                end
+            end
+        end
+    end
 
-		return closestPart
-	end
+    return bestPart
+end
 
-	local function AimAt(part)
-		if not part then return end
-		Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
-	end
+local function IsValidTarget(plr)
+    if plr == LocalPlayer then return false end
+    if not plr.Character then return false end
 
-	local hue = 0
-	local rainbowDelay = 0.02 
-	local lastTick = tick()
+    local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+    local hum = plr.Character:FindFirstChild("Humanoid")
+    if not hrp or not hum or hum.Health <= 0 then return false end
 
-	RunService.RenderStepped:Connect(function()
-		if Aimbot.CircleEnabled then
-			local pos = UIS:GetMouseLocation()
-			Circle.Position = Vector2.new(pos.X, pos.Y)
+    if Aimbot.TeamCheck and plr.Team == LocalPlayer.Team then
+        return false
+    end
 
-			if Aimbot.Rainbow then
-				if tick() - lastTick >= rainbowDelay then
-					hue = hue + 0.01
-					if hue >= 1 then hue = 0 end
-					Circle.Color = Color3.fromHSV(hue, 1, 1)
-					lastTick = tick()
-				end
-			else
-				Circle.Color = Color3.fromRGB(255, 255, 255)
-			end
-		end
-	end)
+    return true
+end
 
-	task.spawn(function()
-		while task.wait() do
-			if Aimbot.Enabled and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-				local target = GetClosest()
-				if target then
-					AimAt(target)
-				end
-			end
-		end
-	end)
+local function GetClosest()
+    local closestPart = nil
+    local closestDist = Aimbot.FOV
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if IsValidTarget(plr) then
+            local part = GetAimPart(plr.Character)
+            if part then
+                local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local mousePos = UIS:GetMouseLocation()
+                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+
+                    if dist <= closestDist then
+                        closestDist = dist
+                        closestPart = part
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPart
+end
+
+local function AimAt(part)
+    if not part then return end
+    Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
+end
+
+local hue = 0
+local rainbowDelay = 0.02
+local lastTick = tick()
+
+Connections.CircleUpdate = RunService.RenderStepped:Connect(function()
+    if Aimbot.CircleEnabled then
+        local pos = UIS:GetMouseLocation()
+        Circle.Position = Vector2.new(pos.X, pos.Y)
+
+        if Aimbot.Rainbow then
+            if tick() - lastTick >= rainbowDelay then
+                hue = hue + 0.01
+                if hue >= 1 then hue = 0 end
+                Circle.Color = Color3.fromHSV(hue, 1, 1)
+                lastTick = tick()
+            end
+        else
+            Circle.Color = Color3.fromRGB(255, 255, 255)
+        end
+    end
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if Aimbot.Enabled and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+            local target = GetClosest()
+            if target then
+                AimAt(target)
+            end
+        end
+    end
+end)
+
 Library:OnUnload(function()
     notify("BlackKing", {
         Title = "Upio",
@@ -677,8 +753,8 @@ Library:OnUnload(function()
     end)
 
     pcall(function()
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = 16
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = 16
         end
     end)
 
@@ -695,6 +771,5 @@ Library:OnUnload(function()
         Time = 5
     })
 end)
-
 
 BlackKing.Interface.ApplySettingsTab(Window)
