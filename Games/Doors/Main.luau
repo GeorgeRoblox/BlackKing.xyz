@@ -1,4 +1,4 @@
-local LoadStart = tick() -- b
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -20,6 +20,8 @@ local Services = setmetatable({}, {
 		return CloneReference(game:GetService(Name))
 	end
 })
+
+George = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/George.jpg"
 
 local Globals = {}
 local Connections = {}
@@ -978,7 +980,7 @@ Toggles.AutoBreakerBox:OnChanged(function(Value)
 	if Value and CurrentRooms:FindFirstChild("ElevatorBreaker", true) then
 		if not Globals.BreakerBoxInteracted then
 			if not Globals.BreakerBoxNotified then
-				Functions.Notify({ Title = "Interact with the breaker box.", Body = "It will be automatically solved." })
+				Functions.Notify({ Title = "Interact with the breaker box.", Body = "It will be automatically solved.", Image = George })
 				Globals.BreakerBoxInteracted = true
 			end
 		else
@@ -1023,16 +1025,6 @@ Groupboxes.Self_Automation:AddDropdown("AutoClosetEntityList", {
 	Text = "Ignore List",
 	Values = { "Rush", "Ambush", "Blitz", "A-60", "A-120", "AR0xMBUSH", "RNIUSHCG==" },
 	Multi = true, AllowNull = true
-})
-Groupboxes.Self_Automation:AddToggle("SpectateEntityToggle", {
-	Text = "Spectate Entity",
-	Default = false,
-	Tooltip = "Spectates the entity while auto hiding."
-})
-Groupboxes.Self_Automation:AddDropdown("SpecateEntityMode", {
-	Values = {"Player to Entity", "Entity to Player"},
-	Default = 1,
-	AllowNull = true
 })
 
 Groupboxes.Self_Misc = Tabs.General:AddRightGroupbox("Miscellaneous")
@@ -1513,7 +1505,7 @@ Toggles.NotifyLibraryCode:OnChanged(function(Value)
 		local Code = Functions.GetLibraryCode()
 		if Code and not Code:find("_") and not Globals.LibraryCodeFound and CurrentRooms:FindFirstChild("50") then
 			local Lock = Services.Workspace:FindFirstChild("Padlock", true)
-			Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = Toggles.NotifyKeepNotifications.Value and Lock or 15 })
+			Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = 15 })
 			Globals.LibraryCodeFound = true
 		end
 	end
@@ -1525,7 +1517,6 @@ Groupboxes.Visuals_EntitySettings:AddDivider()
 Groupboxes.Visuals_EntitySettings:AddDropdown("NotifyStyle", { Text = "Notify Style", Values = { "BlackKing", "Library" }, Default = 1 })
 Groupboxes.Visuals_EntitySettings:AddSlider("NotifySoundVolume", { Text = "Sound Volume", Min = 0, Max = 10, Default = 3, Rounding = 1 })
 Groupboxes.Visuals_EntitySettings:AddToggle("NotifyPlaySound", { Text = "Play Sound", Default = true, Tooltip = "Makes notifications play an alert sound." })
-Groupboxes.Visuals_EntitySettings:AddToggle("NotifyKeepNotifications", { Text = "Keep Notifications", Default = false, Tooltip = "Certain notifications will stay on screen until they are no longer needed." })
 Groupboxes.Visuals_EntitySettings:AddButton({ Text = "Test Notification", DoubleClick = false, Tooltip = "Sends a test notifcation, so you can see how your settings look.", Func = function()
 	Functions.Notify({Title = "This is a test."})
 end})
@@ -2111,7 +2102,7 @@ end
 			local Code = Functions.GetLibraryCode()
 			if Code and not Code:find("_") and not Globals.LibraryCodeFound then
 				local Lock = Services.Workspace:FindFirstChild("Padlock", true)
-				Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = Toggles.NotifyKeepNotifications.Value and Lock or 15 })
+				Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = 15 })
 				Globals.LibraryCodeFound = true
 			end
 		end
@@ -2122,7 +2113,7 @@ end
 			local Code = Functions.GetLibraryCode()
 			if Code and not Code:find("_") and not Globals.LibraryCodeFound then
 				local Lock = Services.Workspace:FindFirstChild("Padlock", true)
-				Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = Toggles.NotifyKeepNotifications.Value and Lock or 15 })
+				Functions.Notify({ Title = "Padlock code found!", Body = "The code is: '" .. Code .. "'", Time = 15 })
 				Globals.LibraryCodeFound = true
 			end
 		end
@@ -2221,33 +2212,6 @@ end
 	end)
 
 	Globals.SpoofOffset = 0
-	Globals.LastAutoHide = tick()
-	Connections.AutoHideConnection = Services.RunService.Heartbeat:Connect(function()
-		if not Toggles.AutoClosetToggle.Value or tick() - Globals.LastAutoHide <= 0.1 then
-			Globals.AutoClosetActive = false
-			return
-		end
-		local Entity = Functions.GetNearestEntity(true, Options.AutoClosetEntityList.Value)
-		if Entity then
-			local Closet = Functions.GetNearestHidingSpot()
-			if Character:GetAttribute("Hiding") ~= true and Closet then
-				Globals.AutoClosetActive = true
-				Functions.ForceFirePrompt(Closet.HidePrompt)
-			end
-			if Character:GetAttribute("Hiding") then
-				if Toggles.SpectateEntityToggle.Value and Entity.PrimaryPart then
-					Globals.SpectateEntity = Entity
-				end
-			end
-		elseif Character:GetAttribute("Hiding") == true then
-			Globals.SpectateEntity = nil
-			Globals.AutoClosetActive = false
-			RemotesFolder.CamLock:FireServer()
-		else
-			Globals.SpectateEntity = nil
-		end
-		Globals.LastAutoHide = tick()
-	end)
 
 	Globals.LastAutoAnchor = tick()
 	Connections.AutoSolveAnchorsConnection = Services.RunService.Heartbeat:Connect(function()
@@ -2408,19 +2372,6 @@ end
 		for _, Part in Globals.ThirdPersonParts do
 			Part.Transparency = Toggles.ThirdPersonToggle.Value and 0 or 1
 			Part.LocalTransparencyModifier = Toggles.ThirdPersonToggle.Value and 0 or 1
-		end
-
-		if Globals.SpectateEntity and Toggles.AutoClosetToggle.Value and Toggles.SpectateEntityToggle.Value then
-			local Entity = Globals.SpectateEntity
-
-			local CamPosition
-			if Options.SpecateEntityMode.Value == "Player to Entity" then
-				CamPosition = CFrame.lookAt(Character.Head.Position, Entity.PrimaryPart.Position)
-			else
-				CamPosition = CFrame.lookAt(Entity.PrimaryPart.Position, Character.Head.Position)
-			end
-
-			Camera.CFrame = CamPosition
 		end
 
 		if Main_Game then
@@ -3074,13 +3025,13 @@ Functions.HandleObject = function(Object)
 		table.insert(Objects.Obstructions, Object)
 	elseif Name == "ElevatorBreaker" then
 		if Toggles.AutoBreakerBox.Value and not Globals.BreakerBoxNotified then
-			Functions.Notify({ Title = "Interact with the breaker box.", Body = "It will be automatically solved." })
+			Functions.Notify({ Title = "Interact with the breaker box.", Body = "It will be automatically solved.", Image = George })
 			Globals.BreakerBoxNotified = true
 		end
 		Connections.BreakerConnection = Object:WaitForChild("SurfaceGui").Frame.Code:GetPropertyChangedSignal("Text"):Connect(function()
 			if Toggles.AutoBreakerBox.Value then
 				if not Globals.BreakerBoxStartNotified and (Floor == "Fools" or Floor == "OldHotel") then
-					Functions.Notify({ Title = "Attempting to solve the breaker box.", Body = "Please wait." })
+					Functions.Notify({ Title = "Attempting to solve the breaker box.", Body = "Please wait.", Image = George })
 					Globals.BreakerBoxStartNotified = true
 				end
 				RemotesFolder.EBF:FireServer()
@@ -3090,7 +3041,7 @@ Functions.HandleObject = function(Object)
 	elseif Name == "ElevatorCar" then
 		local ElevConn = Object.DescendantAdded:Connect(function(Desc)
 			if Toggles.AutoBreakerBox.Value and Desc.Name == "TouchInterest" and not Globals.BreakerBoxFinishedNotified then
-				Functions.Notify({ Title = "Successfully solved the breaker box.", Body = "Try going to the elevator!" })
+				Functions.Notify({ Title = "Successfully solved the breaker box.", Body = "Try going to the elevator!", Image = George })
 				Globals.BreakerBoxFinishedNotified = true
 			end
 		end)
@@ -3625,7 +3576,7 @@ Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entit
 			Alias = Entity.PrimaryPart.Name
 		end
 
-		Functions.Notify({ Title = NotifyTitle, Body = NotifyBody, Image = NotifyImage, Time = Toggles.NotifyKeepNotifications.Value and Entity or nil })
+		Functions.Notify({ Title = NotifyTitle, Body = NotifyBody, Image = NotifyImage, Time = nil })
 
 		if Toggles.EntityChatToggle.Value then
 			Functions.SendChat(Alias .. " " .. Options.EntityChatMessage.Value)
@@ -3830,4 +3781,4 @@ end)
 
 while not Globals.MainUI do task.wait() end
 BlackKing.Interface.ApplySettingsTab(Window)
-Functions.Notify({ Title = "Successfully loaded in " .. math.floor((tick() - LoadStart) * 1000) / 1000 .. " seconds." , Body = "Press '" .. tostring(Options.MenuKeybind.Value) .. "' to toggle the UI."})
+Functions.Notify({ Title = "George", Body = "BlackKing Susscesfully loaded.", Image = George})
