@@ -1,4 +1,4 @@
-local LoadStart = tick() --a
+local LoadStart = tick()
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -475,7 +475,7 @@ Toggles.PlayerEsp:OnChanged(function(v)
     end
 end)
 
-vslt:AddSlider("FOwaVSIRCLE", {
+vslt:AddSlider("FOVSIRCLE", {
     Text = "Circle",
     Default = 30,
     Min = 30,
