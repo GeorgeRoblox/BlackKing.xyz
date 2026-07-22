@@ -1,4 +1,4 @@
-local LoadStart = tick() --a
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -136,22 +136,22 @@ local Entities = {
 }
 
 local EntityIcons = {
-	["RushMoving"]      = "rbxassetid://10716032262",
-	["AmbushMoving"]    = "rbxassetid://10110576663",
-	["A60"]             = "rbxassetid://12571092295",
-	["A120"]            = "rbxassetid://12711591665",
-	["BackdoorRush"]    = "rbxassetid://16602023490",
-	["Eyes"]            = "rbxassetid://10183704772",
-	["Lookman"]         = "rbxassetid://10183704772",
-	["BackdoorLookman"] = "rbxassetid://16764872677",
-	["GloombatSwarm"]   = "rbxassetid://79221203116470",
-	["Halt"]            = "rbxassetid://11331795398",
-	["JeffTheKiller"]   = "rbxassetid://94479432156278",
+	["RushMoving"]      = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Rush.jpg",
+	["AmbushMoving"]    = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Ambush.jpg",
+	["A60"]             = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/A-60.jpg",
+	["A120"]            = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/A-120.jpg",
+	["BackdoorRush"]    = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Blitz.jpg",
+	["Eyes"]            = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Eyes.jpg",
+	["Lookman"]         = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Eyes.jpg",
+	["BackdoorLookman"] = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Lookman.jpg",
+	["GloombatSwarm"]   = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/GloomBats.jpg",
+	["Halt"]            = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/halt.jpg",
+	["JeffTheKiller"]   = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/JeffTheKiller.jpg",
 	["GlitchRush"]      = "rbxassetid://73859273102919",
 	["GlitchAmbush"]    = "rbxassetid://88369678433359",
-	["SallyMoving"]     = "rbxassetid://10840888070",
-	["MonumentEntity"]  = "rbxassetid://88933556873017",
-	["Groundskeeper"]   = "rbxassetid://114991380115557"
+	["SallyMoving"]     = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/sally.jpg",
+	["MonumentEntity"]  = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/Monument.jpg",
+	["Groundskeeper"]   = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/groundskeeper.jpg"
 }
 
 local ItemNames = {
