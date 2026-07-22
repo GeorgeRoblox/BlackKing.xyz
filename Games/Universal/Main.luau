@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -485,6 +485,77 @@ end)
 		Default = false,
 	})
 
+	local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local HitboxRunning = false
+local HitboxThread = nil
+
+local HitboxSize = Vector3.new(13, 13, 13)
+
+local function CreateHitbox(player)
+    if player == LocalPlayer then return end
+    if not player.Character then return end
+
+    local parts = {
+        player.Character:FindFirstChild("HumanoidRootPart"),
+        player.Character:FindFirstChild("Head")
+    }
+
+    for _, part in ipairs(parts) do
+        if part and not part:FindFirstChild("SilentHB") then
+            local hb = Instance.new("Part")
+            hb.Name = "SilentHB"
+            hb.Size = HitboxSize
+            hb.Transparency = 1
+            hb.CanCollide = false
+            hb.Anchored = false
+            hb.Massless = true
+            hb.Parent = part
+
+            local weld = Instance.new("WeldConstraint")
+            weld.Part0 = hb
+            weld.Part1 = part
+            weld.Parent = hb
+        end
+    end
+end
+
+local function RemoveHitbox(player)
+    if not player.Character then return end
+    for _, partName in ipairs({"HumanoidRootPart", "Head"}) do
+        local part = player.Character:FindFirstChild(partName)
+        if part then
+            local hb = part:FindFirstChild("SilentHB")
+            if hb then hb:Destroy() end
+        end
+    end
+end
+
+vslt:AddToggle("SAim", {
+    Text = "SilentAim",
+    Default = false,
+    Callback = function(Value)
+        HitboxRunning = Value
+
+        if Value then
+            HitboxThread = task.spawn(function()
+                while HitboxRunning do
+                    for _, player in ipairs(Players:GetPlayers()) do
+                        CreateHitbox(player)
+                    end
+                    task.wait(0.2)
+                end
+            end)
+        else
+            for _, player in ipairs(Players:GetPlayers()) do
+                RemoveHitbox(player)
+            end
+            HitboxThread = nil
+        end
+    end
+})
+
 	vslt:AddToggle("EnableCAB", {
 		Text = "Enable Aimbot",
 		Default = false,
@@ -663,6 +734,21 @@ Library:OnUnload(function()
         end
         table.clear(Connections)
     end)
+
+    HitboxRunning = false
+    HitboxThread = nil
+
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        if player.Character then
+            for _, partName in ipairs({"HumanoidRootPart", "Head"}) do
+                local part = player.Character:FindFirstChild(partName)
+                if part then
+                    local hb = part:FindFirstChild("SilentHB")
+                    if hb then hb:Destroy() end
+                end
+            end
+        end
+    end
 
     pcall(function()
         for _, element in pairs(loadedElements) do
