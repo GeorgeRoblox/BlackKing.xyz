@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -3579,7 +3579,7 @@ Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entit
 		Functions.Notify({ Title = NotifyTitle, Body = NotifyBody, Image = NotifyImage, Time = nil })
 
 		if Toggles.EntityChatToggle.Value then
-			Functions.SendChat(Alias .. " " .. Options.EntityChatMessage.Value)
+			Functions.SendChat("[BlackKing]" .. Alias .. " " .. Options.EntityChatMessage.Value)
 		end
 	end
 
