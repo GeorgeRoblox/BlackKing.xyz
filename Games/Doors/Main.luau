@@ -1,4 +1,4 @@
-local LoadStart = tick() --a
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -539,7 +539,6 @@ Functions.GetCurrentSpeed = function()
     Speed -= (LiveModifiers:FindFirstChild("PlayerSlow") and 3 or 0)
     Speed -= (LiveModifiers:FindFirstChild("PlayerSlowHealth") and Functions.GetInjuriesSpeed() or 0)
 
-    -- Replace IsCrouching() with direct attribute check
     if Character:GetAttribute("Crouching") == true then
         if LiveModifiers:FindFirstChild("PlayerCrouchSlow") then
             Speed -= 8
@@ -868,10 +867,7 @@ Groupboxes.General_Character:AddDivider()
 Groupboxes.General_Character:AddToggle("NoclipToggle", {
 	Text = "Noclip", Default = false, Tooltip = "Allows your character to pass through solid objects."
 })
-Groupboxes.General_Character:AddToggle("RemoveClosetDelay", {
-	Text = "Remove Closet Delay", Default = false,
-	Tooltip = "Removes the short window where you can't exit out of a closet after the animation finishes."
-})
+
 Groupboxes.General_Character:AddToggle("RemoveAcceleration", {
 	Text = "Remove Acceleration", Default = false, Tooltip = "Prevents your character from sliding while moving."
 })
@@ -897,9 +893,6 @@ Groupboxes.General_Character:AddDivider()
 Groupboxes.General_Character:AddToggle("EnableCharacterJump", {
 	Text = "Enable Jumping", Default = false, Tooltip = "Allows your character to jump."
 })
-Groupboxes.General_Character:AddToggle("EnableCharacterSlide", {
-	Text = "Enable Sliding", Default = false, Tooltip = "Allows your character to slide."
-})
 
 local OldJump = false
 local OldSlide = false
@@ -912,11 +905,6 @@ end)
 Toggles.EnableCharacterJump:OnChanged(function(Value)
 	if Character then
 		Character:SetAttribute("CanJump", Value and true or OldJump)
-	end
-end)
-Toggles.EnableCharacterSlide:OnChanged(function(Value)
-	if Character then
-		Character:SetAttribute("CanSlide", Value and true or OldSlide)
 	end
 end)
 
@@ -1375,15 +1363,6 @@ Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetX", { Text = "X Offset", M
 Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetY", { Text = "Y Offset", Min = -10, Max = 10, Default = 1,   Rounding = 1, Compact = true })
 Groupboxes.Visuals_Camera:AddSlider("ThirdPersonOffsetZ", { Text = "Z Offset", Min = -10, Max = 10, Default = 5,   Rounding = 1, Compact = true })
 Groupboxes.Visuals_Camera:AddToggle("ThirdPersonWallCheck", { Text = "Wall Check", Default = false, Tooltip = "Prevents third person from going through walls." })
-Groupboxes.Visuals_Camera:AddDivider()
-Groupboxes.Visuals_Camera:AddToggle("ViewmodelOffsetToggle", {
-	Text = "Viewmodel Offset", Default = false, Tooltip = "Changes the offset of your viewmodel while holding an item.",
-	Disabled = not Functions.CheckCompatability({"require"}), DisabledTooltip = Globals.IncompatibleMessage
-})
-Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetX", { Text = "X Offset", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true, Disabled = not Functions.CheckCompatability({"require"}), DisabledTooltip = Globals.IncompatibleMessage })
-Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetY", { Text = "Y Offset", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true, Disabled = not Functions.CheckCompatability({"require"}), DisabledTooltip = Globals.IncompatibleMessage })
-Groupboxes.Visuals_Camera:AddSlider("ViewmodelOffsetZ", { Text = "Z Offset", Min = -10, Max = 10, Default = 0, Rounding = 1, Compact = true, Disabled = not Functions.CheckCompatability({"require"}), DisabledTooltip = Globals.IncompatibleMessage })
-
 Toggles.AmbientToggle:AddColorPicker("AmbientColor", { Text = "Ambient", Default = Color3.fromRGB(255, 255, 255), Transparency = 0 })
 Toggles.AmbientToggle:OnChanged(function(Value)
 	local OldAmbient = CurrentRooms:FindFirstChild(tostring(LocalPlayer:GetAttribute("CurrentRoom"))):GetAttribute("Ambient")
@@ -1991,7 +1970,7 @@ Modules = {
 }
 
 local CharacterOldConnectionKeys = {
-	"MainHandler", "JumpHandler", "SlideHandler", "LibraryCodeHandler1", "LibraryCodeHandler2",
+	"MainHandler", "JumpHandler", "LibraryCodeHandler1", "LibraryCodeHandler2",
 	"OxygenConnection", "AnimationHandler", "AutoHideConnection", "AutoReviveHandler",
 	"SHMFixer", "AnticheatDisabler", "AnticheatEnableDetector1", "AnticheatEnableDetector2",
 	"AutoSolveAnchorsConnection", "FootstepHandler"
@@ -2050,7 +2029,7 @@ Functions.HandleCharacter = function(NewCharacter)
 	OldSlide = NewCharacter:GetAttribute("CanSlide")
 
 	if Toggles.EnableCharacterJump.Value  then Character:SetAttribute("CanJump",  true) end
-	if Toggles.EnableCharacterSlide.Value then Character:SetAttribute("CanSlide", true) end
+
 
 	if Functions.CheckCompatability({"require"}) then
 		Main_Game = BlackKing.Environment.require(Globals.MainUI.Initiator.Main_Game)
@@ -2203,14 +2182,6 @@ end
 		if Toggles.EnableCharacterJump.Value then Character:SetAttribute("CanJump", true) end
 	end)
 
-	Connections.SlideHandler = Character:GetAttributeChangedSignal("CanSlide"):Connect(function()
-		local Val = Character:GetAttribute("CanSlide")
-		if Toggles.EnableCharacterSlide.Value and Val ~= true or not Toggles.EnableCharacterSlide.Value then
-			OldSlide = Val
-		end
-		if Toggles.EnableCharacterSlide.Value then Character:SetAttribute("CanSlide", true) end
-	end)
-
 	Globals.SpoofOffset = 0
 
 	Globals.LastAutoAnchor = tick()
@@ -2269,11 +2240,6 @@ end
 
 		if Main_Game then
 			if Toggles.RemoveCameraShake.Value     then Main_Game.csgo = CFrame.new() end
-			if Toggles.ViewmodelOffsetToggle.Value then
-				Main_Game.tooloffset = Vector3.new(Options.ViewmodelOffsetX.Value, Options.ViewmodelOffsetY.Value, Options.ViewmodelOffsetZ.Value)
-			else
-				Main_Game.tooloffset = Vector3.zero
-			end
 		end
 
 		if Globals.SelfKilled and Globals.MainUI:FindFirstChild("Statistics") then
@@ -2349,15 +2315,6 @@ end
 			Main_Game.fovtarget = Options.FieldOfView.Value
 		else
 			Camera.FieldOfView = Options.FieldOfView.Value
-		end
-
-		if Toggles.RemoveClosetDelay.Value
-			and Humanoid.MoveDirection ~= Vector3.zero
-			and (CollisionPart.Anchored or RootPart.Anchored)
-			and Character:GetAttribute("AnimatingClient") ~= true
-			and Character:GetAttribute("Hiding") == true
-		then
-			RemotesFolder.CamLock:FireServer()
 		end
 
 		local ClosestPlayer = { Distance = math.huge, Object = nil }
