@@ -1,4 +1,4 @@
-local LoadStart = tick() -- yes
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -880,7 +880,7 @@ local CustomPhysics
 
 Options.SpeedBoostSlider:OnChanged(function(Value)
 	if RemotesFolder:FindFirstChild("Crouch") then
-		RemotesFolder.Crouch:FireServer(Value and true or Functions.IsCrouching(), true)
+		RemotesFolder.Crouch:FireServer(Value, true)
 	end
 end)
 
@@ -1014,13 +1014,6 @@ Groupboxes.Self_Automation:AddDropdown("AutoInteractIgnoreList", {
 	Multi = true, AllowNull = true
 })
 Groupboxes.Self_Automation:AddDivider()
-Groupboxes.Self_Automation:AddToggle("AutoClosetToggle", {
-	Text = "Auto Closet", Default = false,
-	Tooltip = "Automatically hides in a nearby closet when an entity is near."
-})
-Toggles.AutoClosetToggle:AddKeyPicker("AutoClosetKeybind", {
-	Text = "Auto Closet", Default = "Q", Mode = "Toggle", SyncToggleState = true
-})
 Groupboxes.Self_Automation:AddDropdown("AutoClosetEntityList", {
 	Text = "Ignore List",
 	Values = { "Rush", "Ambush", "Blitz", "A-60", "A-120", "AR0xMBUSH", "RNIUSHCG==" },
@@ -1227,18 +1220,33 @@ Groupboxes.Exploits_BypassRight:AddToggle("PositionSpoof", {
 	Text = "Position Spoof", Default = false,
 	Tooltip = "Makes your character appear underground on the server, protecting you from rush-like entities."
 })
-Groupboxes.Exploits_BypassRight:AddToggle("CrouchSpoof", {
+Groupboxes.Exploits_BypassRight:AddToggle("AntiFH", {
     Text = "Anti Figure Hearing",
     Default = false,
-    Tooltip = "Makes the game think you are always crouching.",
-    Callback = function(value)
-        if value then
-            RemotesFolder.Crouch:FireServer(true, nil)
-        else
-            RemotesFolder.Crouch:FireServer(false, nil)
-        end
-    end
+    Disabled = not RemotesFolder:FindFirstChild("Crouch")
 })
+
+Connections.AntiFHLoop = nil
+
+Toggles.AntiFH:OnChanged(function(Value)
+    if not Value then
+        if Connections.AntiFHLoop then
+            Connections.AntiFHLoop:Disconnect()
+            Connections.AntiFHLoop = nil
+        end
+        return
+    end
+
+    if RemotesFolder:FindFirstChild("Crouch") then
+        RemotesFolder.Crouch:FireServer(true)
+    end
+
+    Connections.AntiFHLoop = game:GetService("RunService").Heartbeat:Connect(function()
+        if Toggles.AntiFH.Value or Toggles.PositionSpoof.Value and RemotesFolder:FindFirstChild("Crouch") then
+            RemotesFolder.Crouch:FireServer(true)
+        end
+    end)
+end)
 
 Toggles.PositionSpoof:OnChanged(function(Value)
 	if Floor ~= "Fools" and Floor ~= "OldHotel" then
@@ -2312,9 +2320,7 @@ end
 		end
 
 		Character:SetAttribute("Sliding", Globals.Sliding)
-		if Character:GetAttribute("Crouching") ~= Functions.IsCrouching() then
-			Character:SetAttribute("Crouching", Functions.IsCrouching())
-		end
+
 
 		RayParams.FilterDescendantsInstances = { Character }
 		local TPOffset = CFrame.new(Options.ThirdPersonOffsetX.Value, Options.ThirdPersonOffsetY.Value, Options.ThirdPersonOffsetZ.Value)
