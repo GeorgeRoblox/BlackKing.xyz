@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -2300,10 +2300,6 @@ end
 			end
 		end
 
-		if (Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value) and RemotesFolder:FindFirstChild("Crouch") then
-			RemotesFolder.Crouch:FireServer(true, true)
-		end
-
 		if Floor ~= "Fools" and Floor ~= "OldHotel" and not Camera:FindFirstChild("MinecartRig") then
 			RootPart.CanCollide = false
 		end
@@ -2353,14 +2349,31 @@ end
 			Globals.LastCrouchFire = tick()
 		end
 
-		if tick() - Globals.LastAnimationCheck > 0.1 then
-			local Sliding = false
-			for _, Anim in Humanoid:GetPlayingAnimationTracks() do
-				if Anim.Name == "Slide" then Sliding = true break end
-			end
-			Globals.Sliding = Sliding
-			Globals.LastAnimationCheck = tick()
-		end
+local CrouchRemote = RemotesFolder:FindFirstChild("Crouch")
+
+if CrouchRemote then
+
+    -- Only fire every 0.1s
+    if tick() - Globals.LastCrouchFire > 0.1 then
+        
+        local IsCrouch = Functions.IsCrouching()
+
+        -- Spoof overrides real crouch state
+        if Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value then
+            IsCrouch = true
+        end
+
+        -- Fire once, cleanly
+        CrouchRemote:FireServer(IsCrouch, true)
+        Globals.LastCrouchFire = tick()
+    end
+
+    -- If spoofing is enabled, force crouch ON every frame
+    if (Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value) then
+        CrouchRemote:FireServer(true, nil)
+    end
+end
+
 
 		Character:SetAttribute("Sliding", Globals.Sliding)
 		if Character:GetAttribute("Crouching") ~= Functions.IsCrouching() then
