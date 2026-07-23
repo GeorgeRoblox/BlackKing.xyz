@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() --a
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -1255,13 +1255,13 @@ Toggles.CrouchSpoof:OnChanged(function(Value)
     end
 
     if RemotesFolder:FindFirstChild("Crouch") then
-        RemotesFolder.Crouch:FireServer(true, true)
+        RemotesFolder.Crouch:FireServer(true)
     end
 
     Connections.CrouchSpoofLoop = game:GetService("RunService").Heartbeat:Connect(function()
         if RemotesFolder:FindFirstChild("Crouch") then
             local ShouldCrouch = Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value
-            RemotesFolder.Crouch:FireServer(ShouldCrouch and true or Functions.IsCrouching(), true)
+            RemotesFolder.Crouch:FireServer(ShouldCrouch)
         end
     end)
 end)
@@ -1790,7 +1790,7 @@ Groupboxes.Visuals_ESP_Settings:AddSlider("ESPFillTransparency",        { Text =
 Groupboxes.Visuals_ESP_Settings:AddSlider("ESPOutlineTransparency",     { Text = "Outline Transparency",      Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
 Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextTransparency",        { Text = "Text Transparency",         Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
 Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextOutlineTransparency", { Text = "Text Outline Transparency", Min = 0, Max = 1, Default = 0,    Rounding = 2, Compact = true })
-Groupboxes.Visuals_ESP_Settings:AddSlider("ESPFadeTime",                { Text = "Fade Time",                 Min = 0, Max = 1, Default = 0.25, Rounding = 2, Compact = true })
+Groupboxes.Visuals_ESP_Settings:AddSlider("ESPFadeTime",                { Text = "Fade Time",                 Min = 0, Max = 1, Default = 0, Rounding = 2, Compact = true })
 Groupboxes.Visuals_ESP_Settings:AddSlider("ESPRenderLimit",             { Text = "Render Limit",              Min = 30, Max = 240, Default = 240, Rounding = 0, Compact = true })
 Groupboxes.Visuals_ESP_Settings:AddSlider("ESPTextSize",                { Text = "Text Size",                 Min = 12, Max = 24, Default = 20, Rounding = 0, Compact = true })
 Groupboxes.Visuals_ESP_Settings:AddDropdown("ESPTextFont", {
@@ -1813,9 +1813,9 @@ BlackKing.ESPLibrary:SetOutlineTransparency(0)
 BlackKing.ESPLibrary:SetTextTransparency(0)
 BlackKing.ESPLibrary:SetTextOutlineTransparency(0)
 BlackKing.ESPLibrary:SetRenderLimit(240)
-BlackKing.ESPLibrary:SetFadeTime(0.25)
+BlackKing.ESPLibrary:SetFadeTime(0)
 BlackKing.ESPLibrary:SetTextSize(20)
-BlackKing.ESPLibrary:SetFont(Enum.Font.Highway)
+BlackKing.ESPLibrary:SetFont(Enum.Font.RobotoCondensed)
 BlackKing.ESPLibrary:SetTracers(false)
 BlackKing.ESPLibrary:SetTracerSize(0.75)
 BlackKing.ESPLibrary:SetTracerOrigin("Bottom")
