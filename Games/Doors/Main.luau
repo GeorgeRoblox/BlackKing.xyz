@@ -519,38 +519,38 @@ Functions.SendChat = function(Message)
 	Channel:SendAsync(Message)
 end
 
-Functions.IsCrouching = function()
-	if Floor == "Fools" or Floor == "OldHotel" then
-		return Character:GetAttribute("Crouching")
-	end
-	return CollisionPart.CollisionGroup == "PlayerCrouching"
-end
-
 Functions.GetInjuriesSpeed = function()
 	return 0.075 * (Humanoid.MaxHealth - Humanoid.Health)
 end
 
 Functions.GetCurrentSpeed = function()
-	local Speed = 15
-	Speed += Character:GetAttribute("SpeedBoost") or 0
-	Speed += Character:GetAttribute("SpeedBoostBehind") or 0
-	Speed += Character:GetAttribute("SpeedBoostExtra") or 0
-	Speed += (Floor == "Party" and 10 or 0)
-	Speed += (LiveModifiers:FindFirstChild("PlayerFast") and 3 or 0)
-	Speed += (LiveModifiers:FindFirstChild("PlayerFaster") and 6 or 0)
-	Speed += (LiveModifiers:FindFirstChild("PlayerFastest") and 20 or 0)
-	Speed -= (LiveModifiers:FindFirstChild("PlayerSlow") and 3 or 0)
-	Speed -= (LiveModifiers:FindFirstChild("PlayerSlowHealth") and Functions.GetInjuriesSpeed() or 0)
-	if Functions.IsCrouching() then
-		if LiveModifiers:FindFirstChild("PlayerCrouchSlow") then
-			Speed -= 8
-		elseif LiveModifiers:FindFirstChild("PlayerSlow") then
-			Speed -= 8
-		else
-			Speed -= 5
-		end
-	end
-	return Speed
+    local Speed = 15
+
+    Speed += Character:GetAttribute("SpeedBoost") or 0
+    Speed += Character:GetAttribute("SpeedBoostBehind") or 0
+    Speed += Character:GetAttribute("SpeedBoostExtra") or 0
+
+    Speed += (Floor == "Party" and 10 or 0)
+
+    Speed += (LiveModifiers:FindFirstChild("PlayerFast") and 3 or 0)
+    Speed += (LiveModifiers:FindFirstChild("PlayerFaster") and 6 or 0)
+    Speed += (LiveModifiers:FindFirstChild("PlayerFastest") and 20 or 0)
+
+    Speed -= (LiveModifiers:FindFirstChild("PlayerSlow") and 3 or 0)
+    Speed -= (LiveModifiers:FindFirstChild("PlayerSlowHealth") and Functions.GetInjuriesSpeed() or 0)
+
+    -- Replace IsCrouching() with direct attribute check
+    if Character:GetAttribute("Crouching") == true then
+        if LiveModifiers:FindFirstChild("PlayerCrouchSlow") then
+            Speed -= 8
+        elseif LiveModifiers:FindFirstChild("PlayerSlow") then
+            Speed -= 8
+        else
+            Speed -= 5
+        end
+    end
+
+    return Speed
 end
 
 Functions.GetMousePosition = function()
@@ -1229,6 +1229,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("AntiFH", {
 Connections.AntiFHLoop = nil
 
 Toggles.AntiFH:OnChanged(function(Value)
+    -- Pokud je vypnuto → zastavit loop
     if not Value then
         if Connections.AntiFHLoop then
             Connections.AntiFHLoop:Disconnect()
@@ -1237,12 +1238,14 @@ Toggles.AntiFH:OnChanged(function(Value)
         return
     end
 
+    -- Pokud je zapnuto → jednorázově spoofnout
     if RemotesFolder:FindFirstChild("Crouch") then
         RemotesFolder.Crouch:FireServer(true)
     end
 
+    -- Spustit loop jen když je toggle ON
     Connections.AntiFHLoop = game:GetService("RunService").Heartbeat:Connect(function()
-        if Toggles.AntiFH.Value or Toggles.PositionSpoof.Value and RemotesFolder:FindFirstChild("Crouch") then
+        if Toggles.AntiFH.Value and RemotesFolder:FindFirstChild("Crouch") then
             RemotesFolder.Crouch:FireServer(true)
         end
     end)
