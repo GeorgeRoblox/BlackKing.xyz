@@ -1,4 +1,4 @@
-local LoadStart = tick() --a
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -1228,8 +1228,18 @@ Groupboxes.Exploits_BypassRight:AddToggle("PositionSpoof", {
 	Tooltip = "Makes your character appear underground on the server, protecting you from rush-like entities."
 })
 Groupboxes.Exploits_BypassRight:AddToggle("CrouchSpoof", {
-	Text = "Anti Figure Hearing", Default = false, Tooltip = "Makes the game think you are always crouching."
+    Text = "Anti Figure Hearing",
+    Default = false,
+    Tooltip = "Makes the game think you are always crouching.",
+    Callback = function(value)
+        if value then
+            RemotesFolder.Crouch:FireServer(true, nil)
+        else
+            RemotesFolder.Crouch:FireServer(false, nil)
+        end
+    end
 })
+
 Toggles.PositionSpoof:OnChanged(function(Value)
 	if Floor ~= "Fools" and Floor ~= "OldHotel" then
 		if Value then
@@ -1245,39 +1255,6 @@ end)
 Toggles.PositionSpoof:AddKeyPicker("PositionSpoof", {
 	Text = "Position Spoof", Default = "B", Mode = "Toggle", SyncToggleState = true
 })
-Toggles.CrouchSpoof:OnChanged(function(Value)
-    local Event = game:GetService("ReplicatedStorage").RemotesFolder:FindFirstChild("Crouch")
-
-    -- If toggled OFF
-    if not Value then
-        if Connections.CrouchSpoofLoop then
-            Connections.CrouchSpoofLoop:Disconnect()
-            Connections.CrouchSpoofLoop = nil
-        end
-
-        -- Send crouch false once when disabling
-        if Event then
-            Event:FireServer(false, nil)
-        end
-
-        return
-    end
-
-    -- If toggled ON
-    if Event then
-        Event:FireServer(true, nil)
-    end
-
-    -- Loop
-    Connections.CrouchSpoofLoop = game:GetService("RunService").Heartbeat:Connect(function()
-        if Event then
-            local ShouldCrouch = Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value
-            Event:FireServer(ShouldCrouch, nil)
-        end
-    end)
-end)
-
-
 
 Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("Remove")
 Groupboxes.Exploits_Remove:AddToggle("RemoveScreech", { Text = "Remove Screech",  Default = false, Tooltip = "Prevents 'Screech' from spawning." })
@@ -2292,14 +2269,6 @@ end
 			Globals.MainUI.Statistics.Death.Text = "Died to BlackKing"
 		end
 
-		local MainFrame = Globals.MainUI:FindFirstChild("MainFrame")
-		if MainFrame then
-			local Effects = MainFrame.Healthbar:FindFirstChild("Effects")
-			if Effects and Effects:FindFirstChild("Crouching") then
-				Effects.Crouching.Visible = Functions.IsCrouching()
-			end
-		end
-
 		if Floor ~= "Fools" and Floor ~= "OldHotel" and not Camera:FindFirstChild("MinecartRig") then
 			RootPart.CanCollide = false
 		end
@@ -2341,39 +2310,6 @@ end
 				RemotesFolder.MotorReplication:FireServer(-650)
 			end
 		end
-
-		if RemotesFolder:FindFirstChild("Crouch") and tick() - Globals.LastCrouchFire > 0.1 then
-			local IsCrouch = Functions.IsCrouching()
-			if Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value then IsCrouch = true end
-			RemotesFolder.Crouch:FireServer(IsCrouch, true)
-			Globals.LastCrouchFire = tick()
-		end
-
-local CrouchRemote = RemotesFolder:FindFirstChild("Crouch")
-
-if CrouchRemote then
-
-    -- Only fire every 0.1s
-    if tick() - Globals.LastCrouchFire > 0.1 then
-        
-        local IsCrouch = Functions.IsCrouching()
-
-        -- Spoof overrides real crouch state
-        if Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value then
-            IsCrouch = true
-        end
-
-        -- Fire once, cleanly
-        CrouchRemote:FireServer(IsCrouch, true)
-        Globals.LastCrouchFire = tick()
-    end
-
-    -- If spoofing is enabled, force crouch ON every frame
-    if (Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value) then
-        CrouchRemote:FireServer(true, nil)
-    end
-end
-
 
 		Character:SetAttribute("Sliding", Globals.Sliding)
 		if Character:GetAttribute("Crouching") ~= Functions.IsCrouching() then
