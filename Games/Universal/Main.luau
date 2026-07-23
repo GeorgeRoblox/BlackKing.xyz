@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- yes
 BlackKing.SavePath = "Universal/Main"
 
 local Library = BlackKing.Interface.Library
@@ -202,6 +202,51 @@ end)
 			ApplyWalkSpeed()
 		end
 	})
+
+
+mainft:AddToggle("EnableIJ", {
+    Text = "Infinite Jumps",
+    Default = false,
+    Callback = function(state)
+        toggleInfJump(game.Players.LocalPlayer, state)
+    end
+})
+
+getgenv().infJumpConnection = nil
+getgenv().infinitejump = false
+
+local uis = game:GetService("UserInputService")
+
+local function enableInfJump(player)
+    if getgenv().infJumpConnection then return end
+    getgenv().infinitejump = true
+
+    getgenv().infJumpConnection = uis.JumpRequest:Connect(function()
+        if getgenv().infinitejump then
+            local hum = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
+            if hum then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end)
+end
+
+local function disableInfJump()
+    if getgenv().infJumpConnection then
+        getgenv().infJumpConnection:Disconnect()
+        getgenv().infJumpConnection = nil
+    end
+    getgenv().infinitejump = false
+end
+
+local function toggleInfJump(player, state)
+    if state then
+        enableInfJump(player)
+    else
+        disableInfJump()
+    end
+end
+
 
 
 		local Visualtab = Tabs.Visual:AddLeftTabbox()
@@ -702,6 +747,7 @@ Library:OnUnload(function()
         Time = 5
     })
 
+    -- ESP Cleanup
     pcall(function()
         for plr, obj in pairs(PlayerESPObjects) do
             ESPLibrary:RemoveESP(obj)
@@ -709,6 +755,7 @@ Library:OnUnload(function()
         table.clear(PlayerESPObjects)
     end)
 
+    -- Circle Cleanup
     pcall(function()
         if Circle then
             Circle.Visible = false
@@ -716,6 +763,7 @@ Library:OnUnload(function()
         end
     end)
 
+    -- Connections Cleanup
     pcall(function()
         for _, conn in pairs(Connections) do
             if conn and conn.Disconnect then
@@ -725,6 +773,7 @@ Library:OnUnload(function()
         table.clear(Connections)
     end)
 
+    -- UI Elements Cleanup
     pcall(function()
         for _, element in pairs(loadedElements) do
             if element and element.Container then
@@ -737,9 +786,31 @@ Library:OnUnload(function()
         addonLoaded = false
     end)
 
+    -- WalkSpeed Reset
     pcall(function()
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
             LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end)
+
+    -- 🔥 Infinite Jump Cleanup
+    pcall(function()
+        if getgenv().infJumpConnection then
+            getgenv().infJumpConnection:Disconnect()
+            getgenv().infJumpConnection = nil
+        end
+        getgenv().infinitejump = false
+    end)
+
+    -- 🔥 Hitbox Reset
+    pcall(function()
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.Size = Vector3.new(2, 2, 1)
+                end
+            end
         end
     end)
 
