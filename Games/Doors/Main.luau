@@ -1,4 +1,4 @@
-local LoadStart = tick() --a
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -1246,25 +1246,37 @@ Toggles.PositionSpoof:AddKeyPicker("PositionSpoof", {
 	Text = "Position Spoof", Default = "B", Mode = "Toggle", SyncToggleState = true
 })
 Toggles.CrouchSpoof:OnChanged(function(Value)
+    local Event = game:GetService("ReplicatedStorage").RemotesFolder:FindFirstChild("Crouch")
+
+    -- If toggled OFF
     if not Value then
         if Connections.CrouchSpoofLoop then
             Connections.CrouchSpoofLoop:Disconnect()
             Connections.CrouchSpoofLoop = nil
         end
+
+        -- Send crouch false once when disabling
+        if Event then
+            Event:FireServer(false, nil)
+        end
+
         return
     end
 
-    if RemotesFolder:FindFirstChild("Crouch") then
-        RemotesFolder.Crouch:FireServer(true)
+    -- If toggled ON
+    if Event then
+        Event:FireServer(true, nil)
     end
 
+    -- Loop
     Connections.CrouchSpoofLoop = game:GetService("RunService").Heartbeat:Connect(function()
-        if RemotesFolder:FindFirstChild("Crouch") then
+        if Event then
             local ShouldCrouch = Toggles.CrouchSpoof.Value or Toggles.PositionSpoof.Value
-            RemotesFolder.Crouch:FireServer(ShouldCrouch)
+            Event:FireServer(ShouldCrouch, nil)
         end
     end)
 end)
+
 
 
 Groupboxes.Exploits_Remove = Tabs.Exploits:AddRightGroupbox("Remove")
