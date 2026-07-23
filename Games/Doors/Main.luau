@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- yes
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
