@@ -1,77 +1,3 @@
---sorry for the issue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
@@ -98,12 +24,12 @@ local Services = setmetatable({}, {
 George = "https://raw.githubusercontent.com/GeorgeRoblox/Notification/refs/heads/main/Images/George.jpg"
 
 local Globals = {}
-local Connections = {}
-local ESPConnections = {}
+local Con = {}
+local ESPCon = {}
 local Gb = {}
 local FakePrompts = {}
 local Functions = {}
-local PartProperties = {}
+local PP = {}
 
 local Objects = {
 	Prompts = {},
@@ -140,71 +66,71 @@ end
 
 local Entities = {
 	["RushMoving"] = {
-		Alias = "Rush",
+		Name = "Rush",
 		NotifyMessage = { Title = "Entity 'Rush' has spawned.", Body = "Find a hiding spot." }
 	},
 	["AmbushMoving"] = {
-		Alias = "Ambush",
+		Name = "Ambush",
 		NotifyMessage = { Title = "Entity 'Ambush' has spawned.", Body = "Find a hiding spot." }
 	},
 	["Eyes"] = {
-		Alias = "Eyes",
+		Name = "Eyes",
 		NotifyMessage = { Title = "Entity 'Eyes' has spawned.", Body = "Avoid looking at it." }
 	},
 	["Lookman"] = {
-		Alias = "Eyes",
+		Name = "Eyes",
 		NotifyMessage = { Title = "Entity 'Eyes' has spawned.", Body = "Avoid looking at it." }
 	},
 	["BackdoorRush"] = {
-		Alias = "Blitz",
+		Name = "Blitz",
 		NotifyMessage = { Title = "Entity 'Blitz' has spawned.", Body = "Find a hiding spot." }
 	},
 	["BackdoorLookman"] = {
-		Alias = "Lookman",
+		Name = "Lookman",
 		NotifyMessage = { Title = "Entity 'Lookman' has spawned.", Body = "Avoid looking at its eyes." }
 	},
 	["Groundskeeper"] = {
-		Alias = "Groundskeeper",
+		Name = "Groundskeeper",
 		NotifyMessage = { Title = "Entity 'Groundskeeper' has spawned.", Body = "Avoid stepping on the grass." }
 	},
 	["A60"] = {
-		Alias = "A-60",
+		Name = "A-60",
 		NotifyMessage = { Title = "Entity 'A-60' has spawned.", Body = "Find a hiding spot." }
 	},
 	["A120"] = {
-		Alias = "A-120",
+		Name = "A-120",
 		NotifyMessage = { Title = "Entity 'A-120' has spawned.", Body = "Find a hiding spot." }
 	},
 	["GloombatSwarm"] = {
-		Alias = "Gloombat Swarm",
+		Name = "Gloombat Swarm",
 		NotifyMessage = { Title = "Entity 'Gloombat Swarm' has spawned.", Body = "Keep all light sources turned off." }
 	},
 	["GlitchRush"] = {
-		Alias = "RNIUSHCG==",
+		Name = "RNIUSHCG==",
 		NotifyMessage = { Title = "Entity 'RNIUSHCG==' has spawned.", Body = "Find a hiding spot." }
 	},
 	["GlitchAmbush"] = {
-		Alias = "AR0xMBUSH",
+		Name = "AR0xMBUSH",
 		NotifyMessage = { Title = "Entity 'AR0xMBUSH' has spawned.", Body = "Find a hiding spot." }
 	},
 	["MonumentEntity"] = {
-		Alias = "Monument",
+		Name = "Monument",
 		NotifyMessage = { Title = "Entity 'Monument' has spawned.", Body = "It can't move while you are looking at it." }
 	},
 	["JeffTheKiller"] = {
-		Alias = "Jeff the Killer",
+		Name = "Jeff the Killer",
 		NotifyMessage = { Title = "Entity 'Jeff the Killer' has spawned.", Body = "Avoid touching him." }
 	},
 	["CustomEntity"] = {
-		Alias = "Custom Entity",
+		Name = "Custom Entity",
 		NotifyMessage = { Title = "Entity 'Custom Entity' has spawned.", Body = "Find a hiding spot." }
 	},
 	["FrozenAmbush"] = {
-		Alias = "Frozen Ambush",
+		Name = "Frozen Ambush",
 		NotifyMessage = { Title = "Entity 'Frozen Ambush' has spawned.", Body = "Find a hiding spot." }
 	},
 	["SallyMoving"] = {
-		Alias = "Sally",
+		Name = "Sally",
 		NotifyMessage = { Title = "Entity 'Sally' has spawned.", Body = "Drop an item for her." }
 	}
 }
@@ -574,7 +500,7 @@ for _, Object in Services.Lighting:GetChildren() do
 			AtmoConnection:Disconnect()
 		end)
 
-		table.insert(Connections, AtmoConnection)
+		table.insert(Con, AtmoConnection)
 		table.insert(Globals.FogInstances, Object)
 	end
 end
@@ -684,7 +610,7 @@ Functions.GetNearestEntity = function(CheckDisabled, List, UseRaycasting)
 	for _, Entity in Services.Workspace:GetChildren() do
 		if Entity and EntityDistances[Entity.Name] and Entity.PrimaryPart then
 			local EntityData = Entities[Entity.Name]
-			if not (List and List[EntityData.Alias]) then
+			if not (List and List[EntityData.Name]) then
 				local Distance = LocalPlayer:DistanceFromCharacter(Entity.PrimaryPart.Position)
 				if Distance < EntityDistances[Entity.Name] and Distance < Nearest.Distance then
 					if not CheckDisabled or Entity:GetAttribute("Inactive") ~= true then
@@ -805,16 +731,16 @@ Functions.AddESP = function(ESPOptions, RoomBased)
 			end
 		end)
 
-		table.insert(Connections, RoomConnection)
-		ESPConnections[Object] = RoomConnection
+		table.insert(Con, RoomConnection)
+		ESPCon[Object] = RoomConnection
 
 		Object.Destroying:Once(function()
 			RoomConnection:Disconnect()
 			if BlackKing then
 				BlackKing.ESPLibrary:RemoveESP(Object)
 			end
-			local Pos = table.find(Connections, RoomConnection)
-			if Pos then table.remove(Connections, Pos) end
+			local Pos = table.find(Con, RoomConnection)
+			if Pos then table.remove(Con, Pos) end
 		end)
 	else
 		BlackKing.ESPLibrary:AddESP(ESPOptions)
@@ -822,12 +748,12 @@ Functions.AddESP = function(ESPOptions, RoomBased)
 end
 
 Functions.RemoveESP = function(Object)
-	local Conn = ESPConnections[Object]
+	local Conn = ESPCon[Object]
 	if Conn then
 		Conn:Disconnect()
-		ESPConnections[Object] = nil
-		local Pos = table.find(Connections, Conn)
-		if Pos then table.remove(Connections, Pos) end
+		ESPCon[Object] = nil
+		local Pos = table.find(Con, Conn)
+		if Pos then table.remove(Con, Pos) end
 	end
 	BlackKing.ESPLibrary:RemoveESP(Object)
 end
@@ -958,7 +884,7 @@ Toggles.NoclipToggle:AddKeyPicker("NoclipKeybind", {
 	Text = "Noclip", Default = "N", Mode = "Toggle", SyncToggleState = true
 })
 Toggles.RemoveAcceleration:OnChanged(function(Value)
-	for Index, Old in PartProperties do
+	for Index, Old in PP do
 		Index.CustomPhysicalProperties = Value and CustomPhysics or Old
 	end
 end)
@@ -990,8 +916,8 @@ Gb.General_Self:AddToggle("DisableIdleKick", {
 	Text = "Disable Idle Kick", Default = false, Tooltip = "Prevents the kick from being idle for 20 minutes."
 })
 Toggles.DisableIdleKick:OnChanged(function(Value)
-	if Functions.CheckCompatability({"getconnections"}) then
-		for _, Conn in BlackKing.Environment.getconnections(LocalPlayer.Idled) do
+	if Functions.CheckCompatability({"getCon"}) then
+		for _, Conn in BlackKing.Environment.getCon(LocalPlayer.Idled) do
 			if Value then Conn:Disable() else Conn:Enable() end
 		end
 	end
@@ -1288,14 +1214,14 @@ Gb.Exploits_BypassRight:AddToggle("AntiFH", {
     Disabled = not RemotesFolder:FindFirstChild("Crouch")
 })
 
-Connections.AntiFHLoop = nil
+Con.AntiFHLoop = nil
 
 Toggles.AntiFH:OnChanged(function(Value)
     -- Pokud je vypnuto → zastavit loop
     if not Value then
-        if Connections.AntiFHLoop then
-            Connections.AntiFHLoop:Disconnect()
-            Connections.AntiFHLoop = nil
+        if Con.AntiFHLoop then
+            Con.AntiFHLoop:Disconnect()
+            Con.AntiFHLoop = nil
         end
         return
     end
@@ -1306,7 +1232,7 @@ Toggles.AntiFH:OnChanged(function(Value)
     end
 
     -- Spustit loop jen když je toggle ON
-    Connections.AntiFHLoop = game:GetService("RunService").Heartbeat:Connect(function()
+    Con.AntiFHLoop = game:GetService("RunService").Heartbeat:Connect(function()
         if Toggles.AntiFH.Value and RemotesFolder:FindFirstChild("Crouch") then
             RemotesFolder.Crouch:FireServer(true)
         end
@@ -1794,7 +1720,7 @@ Toggles.EntityESPToggle:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Value then
 			local Label = EntityESPLabels[Object.Name]
-			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Alias end
+			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Name end
 			if Label and Options.EntityESPOptions.Value[Label] then
 				Functions.AddESP({ Object = Object, Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
 			else
@@ -1810,7 +1736,7 @@ Options.EntityESPOptions:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Toggles.EntityESPToggle.Value then
 			local Label = EntityESPLabels[Object.Name]
-			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Alias end
+			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Name end
 			if Label and Options.EntityESPOptions.Value[Label] then
 				Functions.AddESP({ Object = Object, Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
 			else
@@ -2051,18 +1977,18 @@ local CharacterOldConnectionKeys = {
 }
 
 Globals.IsTyping = false
-Connections.TextBoxConnection1 = Services.UserInputService.TextBoxFocused:Connect(function()
+Con.TextBoxConnection1 = Services.UserInputService.TextBoxFocused:Connect(function()
 	Globals.IsTyping = true
 end)
-Connections.TextBoxConnection2 = Services.UserInputService.TextBoxFocusReleased:Connect(function()
+Con.TextBoxConnection2 = Services.UserInputService.TextBoxFocusReleased:Connect(function()
 	Globals.IsTyping = false
 end)
 
 Functions.HandleCharacter = function(NewCharacter)
 	for _, Key in CharacterOldConnectionKeys do
-		if Connections[Key] then
-			Connections[Key]:Disconnect()
-			Connections[Key] = nil
+		if Con[Key] then
+			Con[Key]:Disconnect()
+			Con[Key] = nil
 		end
 	end
 
@@ -2143,14 +2069,14 @@ end
 	)
 	for _, Part in NewCharacter:GetDescendants() do
 		if Part:IsA("BasePart") then
-			PartProperties[Part] = Part.CustomPhysicalProperties
+			PP[Part] = Part.CustomPhysicalProperties
 			if Toggles.RemoveAcceleration.Value then
 				Part.CustomPhysicalProperties = CustomPhysics
 			end
 		end
 	end
 
-	Connections.LibraryCodeHandler1 = LocalPlayer.PlayerGui.PermUI.Hints.ChildAdded:Connect(function()
+	Con.LibraryCodeHandler1 = LocalPlayer.PlayerGui.PermUI.Hints.ChildAdded:Connect(function()
 		if Toggles.NotifyLibraryCode.Value then
 			local Code = Functions.GetLibraryCode()
 			if Code and not Code:find("_") and not Globals.LibraryCodeFound then
@@ -2161,7 +2087,7 @@ end
 		end
 	end)
 
-	Connections.LibraryCodeHandler2 = Character.ChildAdded:Connect(function(Child)
+	Con.LibraryCodeHandler2 = Character.ChildAdded:Connect(function(Child)
 		if (Child.Name == "LibraryHintPaper" or Child.Name == "LibraryHintPaperHard") and Toggles.NotifyLibraryCode.Value then
 			local Code = Functions.GetLibraryCode()
 			if Code and not Code:find("_") and not Globals.LibraryCodeFound then
@@ -2173,7 +2099,7 @@ end
 	end)
 
 	Globals.OldOxygen = Character:GetAttribute("Oxygen")
-	Connections.OxygenConnection = Character:GetAttributeChangedSignal("Oxygen"):Connect(function()
+	Con.OxygenConnection = Character:GetAttributeChangedSignal("Oxygen"):Connect(function()
 		local NewOxy = Character:GetAttribute("Oxygen")
 		if NewOxy < Globals.OldOxygen and Toggles.NotifyOxygen.Value then
 			Functions.Caption(Functions.FormatOxygen(NewOxy), true)
@@ -2181,7 +2107,7 @@ end
 		Globals.OldOxygen = NewOxy
 	end)
 
-	Connections.AutoReviveHandler = LocalPlayer:GetAttributeChangedSignal("Alive"):Connect(function()
+	Con.AutoReviveHandler = LocalPlayer:GetAttributeChangedSignal("Alive"):Connect(function()
 		if LocalPlayer:GetAttribute("Alive") == false and Toggles.AutoRevive.Value then
 			if Floor == "Fools" or Floor == "OldHotel" then
 				while LocalPlayer:GetAttribute("Alive") ~= true do
@@ -2192,14 +2118,14 @@ end
 		end
 	end)
 
-	Connections.SHMFixer = RootPart:GetPropertyChangedSignal("Anchored"):Connect(function()
+	Con.SHMFixer = RootPart:GetPropertyChangedSignal("Anchored"):Connect(function()
 		task.wait()
 		if Floor == "Fools" and RootPart.Anchored and Character:GetAttribute("Hiding") ~= true then
 			RootPart.Anchored = false
 		end
 	end)
 
-	Connections.AnticheatDisabler = Character:GetAttributeChangedSignal("Climbing"):Connect(function()
+	Con.AnticheatDisabler = Character:GetAttributeChangedSignal("Climbing"):Connect(function()
 		if Character:GetAttribute("Climbing") == true and Toggles.DisableAnticheat.Value and not Globals.AnticheatDisabled then
 			task.wait(0.25)
 			Character:SetAttribute("Climbing", false)
@@ -2208,14 +2134,14 @@ end
 		end
 	end)
 
-	Connections.AnticheatEnableDetector1 = RemotesFolder:WaitForChild("Cutscene").OnClientEvent:Connect(function(CutsceneName)
+	Con.AnticheatEnableDetector1 = RemotesFolder:WaitForChild("Cutscene").OnClientEvent:Connect(function(CutsceneName)
 		if Globals.AnticheatDisabled and not CutsceneName:find("SewerSeek") then
 			Globals.AnticheatDisabled = false
 			Functions.Notify({ Title = "The anticheat has been re-enabled.", Body = "Interact with a ladder to disable it again." })
 		end
 	end)
 
-	Connections.AnticheatEnableDetector2 = RemotesFolder:WaitForChild("UseEnemyModule").OnClientEvent:Connect(function(ModuleName)
+	Con.AnticheatEnableDetector2 = RemotesFolder:WaitForChild("UseEnemyModule").OnClientEvent:Connect(function(ModuleName)
 		if ModuleName == "Void" or ModuleName == "Glitch" then
 			if Globals.AnticheatDisabled then
 				Globals.AnticheatDisabled = false
@@ -2225,7 +2151,7 @@ end
 		end
 	end)
 
-	Connections.AnimationHandler = Character.ChildAdded:Connect(function()
+	Con.AnimationHandler = Character.ChildAdded:Connect(function()
 		local ToolNames = { "Lockpick","Shears","SkeletonKey","Key","GeneratorFuse","KeyElectrical","KeyBackdoor","KeyIron", "Multitool" }
 		local Tool
 		for _, Name in ToolNames do
@@ -2248,7 +2174,7 @@ end
 		end
 	end)
 
-	Connections.JumpHandler = Character:GetAttributeChangedSignal("CanJump"):Connect(function()
+	Con.JumpHandler = Character:GetAttributeChangedSignal("CanJump"):Connect(function()
 		local Val = Character:GetAttribute("CanJump")
 		if Toggles.EnableCharacterJump.Value and Val ~= true or not Toggles.EnableCharacterJump.Value then
 			OldJump = Val
@@ -2259,7 +2185,7 @@ end
 	Globals.SpoofOffset = 0
 
 	Globals.LastAutoAnchor = tick()
-	Connections.AutoSolveAnchorsConnection = Services.RunService.Heartbeat:Connect(function()
+	Con.AutoSolveAnchorsConnection = Services.RunService.Heartbeat:Connect(function()
 		if not Toggles.AutoSolveAnchors.Value then return end
 		if not Globals.MainUI:FindFirstChild("AnchorHintFrame") then return end
 		if tick() - Globals.LastAutoAnchor <= 0.1 then return end
@@ -2292,7 +2218,7 @@ end
 	local RayParams = RaycastParams.new()
 	RayParams.FilterType = Enum.RaycastFilterType.Exclude
 
-	Connections.MainHandler = Services.RunService.RenderStepped:Connect(function()
+	Con.MainHandler = Services.RunService.RenderStepped:Connect(function()
 		if Services.Workspace:FindFirstChild("Camera") then
 			Camera = Services.Workspace:FindFirstChild("Camera")
 		end
@@ -2442,11 +2368,11 @@ Functions.HandleHidingTransparency = function(Model)
 					end
 				end
 			end)
-			table.insert(Connections, HideConn)
+			table.insert(Con, HideConn)
 			Model.Destroying:Once(function()
 				HideConn:Disconnect()
-				local Pos = table.find(Connections, HideConn)
-				if Pos then table.remove(Connections, Pos) end
+				local Pos = table.find(Con, HideConn)
+				if Pos then table.remove(Con, Pos) end
 			end)
 		end
 	end
@@ -2647,7 +2573,7 @@ Functions.HandleObject = function(Object)
 		Object:WaitForChild("Door"):WaitForChild("Open").Played:Once(function()
 			DoorConn:Disconnect()
 		end)
-		table.insert(Connections, DoorConn)
+		table.insert(Con, DoorConn)
 
 	elseif Name == "PathLights" then
 		local ObjectsToHighlight = {}
@@ -2700,7 +2626,7 @@ Functions.HandleObject = function(Object)
 			end
 		end)
 
-		table.insert(Connections, PLConn)
+		table.insert(Con, PLConn)
 		table.insert(Objects.PathLights, Object)
 		Object.Destroying:Once(function() PLConn:Disconnect() end)
 	elseif Name == "SeekMovingNewClone" then
@@ -2710,7 +2636,7 @@ Functions.HandleObject = function(Object)
 			end
 			Globals.SeekNodesFolder:ClearAllChildren()
 		end)
-		table.insert(Connections, Connection)
+		table.insert(Con, Connection)
 	elseif Name == "Bridge" then
 		for _, Child in Object:GetChildren() do
 			if Child.Name == "PlayerBarrier" and Child.Size.Y == 2.75 and (Child.Rotation.X == 0 or Child.Rotation.X == 180) then
@@ -2811,8 +2737,8 @@ Functions.HandleObject = function(Object)
                     end
                 end)
 
-                table.insert(Connections, Connection1)
-                table.insert(Connections, Connection2)
+                table.insert(Con, Connection1)
+                table.insert(Con, Connection2)
             end
 		end
 		table.insert(Objects.Obstructions, Object)
@@ -2872,7 +2798,7 @@ Functions.HandleObject = function(Object)
 			Functions.AddESP({ Object = Object, Text = "Gloombat Eggs", Color = Options.EntityESPColor.Value })
 		end
 
-		table.insert(Connections, Connection)
+		table.insert(Con, Connection)
 		table.insert(Objects.Entities, Object)
 	elseif Name == "TriggerEventCollision" and Functions.CheckCompatability({"firetouchinterest"}) then
 		if (Floor == "Fools" or Floor == "OldHotel") and Toggles.RemoveSeekTrigger.Value then
@@ -2916,7 +2842,7 @@ Functions.HandleObject = function(Object)
 		local Connection = Object.DescendantAdded:Connect(function(Part)
 			if Part:IsA("BasePart") then Part.CanTouch = not Toggles.BypassSnare.Value end
 		end)
-		table.insert(Connections, Connection)
+		table.insert(Con, Connection)
 		table.insert(Objects.Entities, Object)
 
 		if Object:FindFirstChild("Snare") then
@@ -3028,7 +2954,7 @@ Functions.HandleObject = function(Object)
 		if Toggles.AutoBreakerBox.Value and not Globals.BreakerBoxNotified then
 			Globals.BreakerBoxNotified = true
 		end
-		Connections.BreakerConnection = Object:WaitForChild("SurfaceGui").Frame.Code:GetPropertyChangedSignal("Text"):Connect(function()
+		Con.BreakerConnection = Object:WaitForChild("SurfaceGui").Frame.Code:GetPropertyChangedSignal("Text"):Connect(function()
 			if Toggles.AutoBreakerBox.Value then
 				if not Globals.BreakerBoxStartNotified and (Floor == "Fools" or Floor == "OldHotel") then
 					Globals.BreakerBoxStartNotified = true
@@ -3095,7 +3021,7 @@ Functions.HandleObject = function(Object)
 					FakePrompt:Destroy()
 					FPEnabledConn:Disconnect()
 				end)
-				table.insert(Connections, FPEnabledConn)
+				table.insert(Con, FPEnabledConn)
 				table.insert(Objects.Prompts, FakePrompt)
 
 				FakePrompt.Enabled = false
@@ -3105,7 +3031,7 @@ Functions.HandleObject = function(Object)
 		end
 		table.insert(Objects.Prompts, Object)
 	elseif Name == "Padlock" then
-		Connections.PadlockConnection = Services.RunService.Heartbeat:Connect(function()
+		Con.PadlockConnection = Services.RunService.Heartbeat:Connect(function()
 			if Object.PrimaryPart then
 				local Distance = LocalPlayer:DistanceFromCharacter(Object.PrimaryPart.Position)
 				if Toggles.AutoUnlockPadlockToggle.Value then
@@ -3121,15 +3047,15 @@ Functions.HandleObject = function(Object)
 			end
 		end)
 		Object.Destroying:Once(function()
-			if Connections.PadlockConnection then
-				Connections.PadlockConnection:Disconnect()
-				Connections.PadlockConnection = nil
+			if Con.PadlockConnection then
+				Con.PadlockConnection:Disconnect()
+				Con.PadlockConnection = nil
 			end
 		end)
 	end
 end
 
-Connections.PromptAnimationFixer1 = Services.ProximityPromptService.PromptButtonHoldBegan:Connect(function(Object)
+Con.PromptAnimationFixer1 = Services.ProximityPromptService.PromptButtonHoldBegan:Connect(function(Object)
 	if not Object:GetAttribute("FakePrompt") then return end
 	local ToolNames = { "Lockpick","Shears","SkeletonKey","Key","GeneratorFuse","KeyElectrical","KeyBackdoor","KeyIron", "Multitool" }
 	local AnimateToolNames = { "Lockpick","Shears","SkeletonKey","Key","KeyElectrical","KeyBackdoor","KeyIron", "Multitool" }
@@ -3193,7 +3119,7 @@ Functions.QueueObject = function(Object)
 end
 
 Globals.QueueDone = true
-Connections.QueueConnection = Services.RunService.RenderStepped:Connect(function()
+Con.QueueConnection = Services.RunService.RenderStepped:Connect(function()
 	local Object = table.remove(Globals.ObjectQueue, 1)
 	if Object then
 		Functions.HandleObject(Object)
@@ -3204,7 +3130,7 @@ for _, Object in Services.Workspace:GetDescendants() do
 	task.spawn(function() Functions.QueueObject(Object) end)
 end
 
-Connections.InstanceHandler = Services.Workspace.DescendantAdded:Connect(function(Object)
+Con.InstanceHandler = Services.Workspace.DescendantAdded:Connect(function(Object)
 	Functions.QueueObject(Object)
 end)
 
@@ -3223,8 +3149,8 @@ for _, Player in Services.Players:GetPlayers() do
 				Functions.RemoveESP(Player.Character)
 			end
 		end)
-		table.insert(Connections, CharConn)
-		table.insert(Connections, DeadConn)
+		table.insert(Con, CharConn)
+		table.insert(Con, DeadConn)
 		Player.Destroying:Once(function()
 			CharConn:Disconnect()
 			DeadConn:Disconnect()
@@ -3232,7 +3158,7 @@ for _, Player in Services.Players:GetPlayers() do
 	end
 end
 
-Connections.PlayerHandler = Services.Players.PlayerAdded:Connect(function(Player)
+Con.PlayerHandler = Services.Players.PlayerAdded:Connect(function(Player)
 	if Player == LocalPlayer then return end
 	if Player.Character and Toggles.PlayerESPToggle.Value then
 		Functions.AddESP({ Object = Player.Character, Text = Player.Name, Color = Options.PlayerESPColor.Value })
@@ -3247,8 +3173,8 @@ Connections.PlayerHandler = Services.Players.PlayerAdded:Connect(function(Player
 			Functions.RemoveESP(Player.Character)
 		end
 	end)
-	table.insert(Connections, CharConn)
-	table.insert(Connections, DeadConn)
+	table.insert(Con, CharConn)
+	table.insert(Con, DeadConn)
 	Player.Destroying:Once(function()
 		CharConn:Disconnect()
 		DeadConn:Disconnect()
@@ -3425,7 +3351,7 @@ Functions.TriggerPrompt = function(Prompt)
 end
 
 Globals.LastAutoInteractFire = tick()
-Connections.AutoInteract = Services.RunService.Heartbeat:Connect(function()
+Con.AutoInteract = Services.RunService.Heartbeat:Connect(function()
 	local Active = Toggles.AutoInteractToggle.Value or Options.AutoInteractKeybind:GetState()
     if not Active then return end
     if tick() - Globals.LastAutoInteractFire < 1/60 then return end
@@ -3448,7 +3374,7 @@ Connections.AutoInteract = Services.RunService.Heartbeat:Connect(function()
     Globals.LastAutoInteractFire = tick()
 end)
 
-Connections.InfiniteItemsHandler = Services.ProximityPromptService.PromptTriggered:Connect(function(Object)
+Con.InfiniteItemsHandler = Services.ProximityPromptService.PromptTriggered:Connect(function(Object)
 	if not Object:GetAttribute("FakePrompt") then return end
 
 	local ToolNames = { "Lockpick","Shears","SkeletonKey","Key","GeneratorFuse","KeyElectrical","KeyBackdoor","KeyIron", "Multitool" }
@@ -3502,7 +3428,7 @@ Connections.InfiniteItemsHandler = Services.ProximityPromptService.PromptTrigger
 	end
 end)
 
-Connections.FloorReplicatedHandler = FloorReplicated.DescendantAdded:Connect(function(Object)
+Con.FloorReplicatedHandler = FloorReplicated.DescendantAdded:Connect(function(Object)
 	if Object.Name == "GlitchScreech" then
 		Modules.GlitchScreech = Object
 		if Toggles.RemoveScreech.Value then Object.Name = "GlitchScreech_Disabled" end
@@ -3517,12 +3443,12 @@ Connections.FloorReplicatedHandler = FloorReplicated.DescendantAdded:Connect(fun
 end)
 
 if FloorReplicated:FindFirstChild("DigitalTimer") then
-	Connections.HasteTimerConnection = FloorReplicated.DigitalTimer:GetPropertyChangedSignal("Value"):Connect(function()
+	Con.HasteTimerConnection = FloorReplicated.DigitalTimer:GetPropertyChangedSignal("Value"):Connect(function()
 		if Toggles.NotifyHasteTime.Value then Functions.Caption(Functions.GetHasteTime(), true) end
 	end)
 end
 
-Connections.FogHandler = Services.Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
+Con.FogHandler = Services.Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
 	if Services.Lighting.FogEnd ~= 10000000 then
 		Globals.OldFog = Services.Lighting.FogEnd
 	end
@@ -3531,7 +3457,7 @@ Connections.FogHandler = Services.Lighting:GetPropertyChangedSignal("FogEnd"):Co
 	end
 end)
 
-Connections.FogHandler2 = Services.Lighting.DescendantAdded:Connect(function(Object)
+Con.FogHandler2 = Services.Lighting.DescendantAdded:Connect(function(Object)
 	if not Object:IsA("Atmosphere") then return end
 	Object:SetAttribute("Density_Old", Object.Density)
 	if Toggles.RemoveCameraFog.Value then Object.Density = 0 end
@@ -3541,13 +3467,13 @@ Connections.FogHandler2 = Services.Lighting.DescendantAdded:Connect(function(Obj
 		if Toggles.RemoveCameraFog.Value then Object.Density = 0 end
 	end)
 	Object.Destroying:Once(function() AtmoConn2:Disconnect() end)
-	table.insert(Connections, AtmoConn2)
+	table.insert(Con, AtmoConn2)
 	table.insert(Globals.FogInstances, Object)
 end)
 
-local RusherAliases = { Rush=true, Ambush=true, Eyes=true, Lookman=true, Blitz=true, ["A-60"]=true, ["A-120"]=true, AR0xMBUSH=true, ["RNIUSHCG=="]=true, ["Custom Entity"]=true }
+local RusherNamees = { Rush=true, Ambush=true, Eyes=true, Lookman=true, Blitz=true, ["A-60"]=true, ["A-120"]=true, AR0xMBUSH=true, ["RNIUSHCG=="]=true, ["Custom Entity"]=true }
 
-Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entity)
+Con.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entity)
 	local EntityData = Entities[Entity.Name]
 	if not EntityData then return end
 
@@ -3561,9 +3487,9 @@ Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entit
 
 	if not Entity.PrimaryPart or LocalPlayer:DistanceFromCharacter(Entity.PrimaryPart.Position) >= 10000 then return end
 
-	local Alias = EntityData.Alias
-    local RealAlias = Alias
-	if Options.EntityList.Value[Alias] and Toggles.NotifyEntities.Value then
+	local Name = EntityData.Name
+    local RealName = Name
+	if Options.EntityList.Value[Name] and Toggles.NotifyEntities.Value then
 		local NotifyTitle = EntityData.NotifyMessage.Title
 		local NotifyBody  = EntityData.NotifyMessage.Body
 		local NotifyImage = EntityIcons[Entity.Name]
@@ -3571,28 +3497,28 @@ Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entit
 		if Entity.Name == "RushMoving" and Entity.PrimaryPart.Name ~= "RushNew" then
 			NotifyTitle = NotifyTitle:gsub("Rush", Entity.PrimaryPart.Name)
 			NotifyImage = Entity.PrimaryPart:WaitForChild("Attachment").ParticleEmitter.Texture
-			Alias = Entity.PrimaryPart.Name
+			Name = Entity.PrimaryPart.Name
 		end
 
 		Functions.Notify({ Title = NotifyTitle, Body = NotifyBody, Image = NotifyImage, Time = nil })
 
 		if Toggles.EntityChatToggle.Value then
-			Functions.SendChat("[BlackKing] " .. Alias .. " " .. Options.EntityChatMessage.Value)
+			Functions.SendChat("[BlackKing] " .. Name .. " " .. Options.EntityChatMessage.Value)
 		end
 	end
 
 	if Entity.Name ~= "GloombatSwarm" then
-		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value[RealAlias] then
+		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value[RealName] then
 			if Entity.Name == "MonumentEntity" then
-				Functions.AddESP({ Object = Entity.Top, Text = Alias, Color = Options.EntityESPColor.Value })
+				Functions.AddESP({ Object = Entity.Top, Text = Name, Color = Options.EntityESPColor.Value })
 			else
-				Functions.AddESP({ Object = Entity, Text = Alias, Color = Options.EntityESPColor.Value })
+				Functions.AddESP({ Object = Entity, Text = Name, Color = Options.EntityESPColor.Value })
 			end
 		end
 		table.insert(Objects.Entities, Entity)
 	end
 
-	if RusherAliases[EntityData.Alias] then
+	if RusherNamees[EntityData.Name] then
 		Instance.new("Humanoid", Entity).Name = "HighlightHumanoid"
 		local Root = Entity.PrimaryPart
 		if Root then Root.Transparency = 0.999 Root.Material = Enum.Material.Plastic end
@@ -3606,7 +3532,7 @@ Connections.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entit
 end)
 
 local LastClean = tick()
-Connections.Cleaner = Services.RunService.Heartbeat:Connect(function()
+Con.Cleaner = Services.RunService.Heartbeat:Connect(function()
 	if tick() - LastClean <= 0.5 then return end
 	LastClean = tick()
 
@@ -3616,12 +3542,12 @@ Connections.Cleaner = Services.RunService.Heartbeat:Connect(function()
 			local Object = Array[I]
 			if Object == nil or not Object:IsDescendantOf(Services.Workspace) then
 				table.remove(Array, I)
-				local Conn = ESPConnections[Object]
+				local Conn = ESPCon[Object]
 				if Conn then
 					Conn:Disconnect()
-					ESPConnections[Object] = nil
-					local Pos = table.find(Connections, Conn)
-					if Pos then table.remove(Connections, Pos) end
+					ESPCon[Object] = nil
+					local Pos = table.find(Con, Conn)
+					if Pos then table.remove(Con, Pos) end
 				end
 			end
 			I -= 1
@@ -3630,7 +3556,7 @@ Connections.Cleaner = Services.RunService.Heartbeat:Connect(function()
 end)
 
 local LastPromptFix = tick()
-Connections.PromptFixer = Services.RunService.Heartbeat:Connect(function()
+Con.PromptFixer = Services.RunService.Heartbeat:Connect(function()
 	if tick() - LastPromptFix <= 0.5 then return end
 	LastPromptFix = tick()
 	for _, Prompt in Objects.Prompts do
@@ -3645,16 +3571,16 @@ if LocalPlayer.Character then
 end
 
 LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
-	if Connections.MainHandler then
-		Connections.MainHandler:Disconnect()
-		Connections.MainHandler = nil
+	if Con.MainHandler then
+		Con.MainHandler:Disconnect()
+		Con.MainHandler = nil
 	end
 	task.wait(0.5)
 	Functions.HandleCharacter(NewCharacter)
 end)
 
 Library:OnUnload(function()
-	for Key, Connection in Connections do
+	for Key, Connection in Con do
 		if type(Key) == "string" then
 			pcall(function() Connection:Disconnect() end)
 		else
