@@ -20,7 +20,7 @@ end
 
 Services.StarterGui:SetCore("SendNotification", {
     Title = "BlackKing",
-    Text = "Only DOORS support for now. Universal got delayed D:",
+    Text = "This Script Is Currently Broken.",
     Duration = 10,
     Button1 = "Copy Discord Link",
     Callback = Bindable,
