@@ -1,5 +1,5 @@
 --local Library = (BlackKing.UILibrary == "Linoria" and "LinoriaLib" or "Obsidian")
-local BaseUrl = "https://raw.githubusercontent.com/bocaj111004/Linoria/refs/heads/main/Library.lua"
+local BaseUrl = "https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"
 local BlackKingUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
 
 local Interface = {
