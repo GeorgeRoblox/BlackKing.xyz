@@ -20,7 +20,7 @@ end
 
 Services.StarterGui:SetCore("SendNotification", {
     Title = "BlackKing",
-    Text = "This Script Is Currently Broken.",
+    Text = "This Script Is Currently Broken. Or maybe not working.",
     Duration = 10,
     Button1 = "Copy Discord Link",
     Callback = Bindable,
