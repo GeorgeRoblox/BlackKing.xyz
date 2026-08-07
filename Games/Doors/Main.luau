@@ -1,4 +1,4 @@
-local LoadStart = tick()
+local LoadStart = tick() -- Hotfix V.1
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -352,7 +352,7 @@ local function UpdateBlackKingPositions()
     end
 end
 
-local function BlackKingNotify(TitleText, DescriptionText, Image, Color, Duration)
+local function BlackKingNotify(TitleText, DescriptionText, Image, Color, Time)
     local MainColor = Color or Color3.fromRGB(0, 120, 255)
 
     local Main = Instance.new("Frame")
@@ -467,7 +467,7 @@ local function BlackKingNotify(TitleText, DescriptionText, Image, Color, Duratio
 
     local Sound = Instance.new("Sound")
     Sound.SoundId = "rbxassetid://3318713980"
-    Sound.Volume = 1
+    Sound.Volume = (Toggles.NotifyPlaySound and Toggles.NotifyPlaySound.Value and Options.NotifySoundVolume.Value) or (Toggles.NotifyPlaySound and 0 or 3)
     Sound.PlayOnRemove = true
     Sound.Parent = game.CoreGui
     Sound:Destroy()
@@ -526,7 +526,7 @@ local function BlackKingNotify(TitleText, DescriptionText, Image, Color, Duratio
         )
     end)
 
-    local Timer = Duration or 3.33
+    local Timer = Time or 3.33
 
     local InInfo = TweenInfo.new(
         0.8,
