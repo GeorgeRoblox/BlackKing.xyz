@@ -1,4 +1,67 @@
-local LoadStart = tick() -- Hotfix V.1
+if BlackKing then
+    return 
+end
+getgenv().BlackKing = {
+    Legit = true
+}
+
+local GameList = {
+  [2440500124] = "Doors"
+}
+
+local BaseUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
+getgenv().BlackKing = {
+    Environment = loadstring(game:HttpGet(BaseUrl .. "Components/Environment.luau"))(),
+    ESPLibrary = loadstring(game:HttpGet(BaseUrl .. "Components/ESPLibrary.luau"))(),
+
+    Legit = true,
+}
+
+local function CloneReference(Object)
+    if BlackKing and BlackKing.Environment.cloneref then
+        return BlackKing.Environment.cloneref(Object)
+    else
+        return Object
+    end
+end
+
+local Services = setmetatable({}, {
+    __index = function(self, Name)
+        return CloneReference(game:GetService(Name))
+    end
+})
+
+if BlackKing.Environment.writefile and BlackKing.Environment.readfile then
+    if not BlackKing.Environment.isfile("BlackKing/UserData.json") then
+        local Data = {
+            TotalExecutions = 0,
+            UILibrary = "Obsidian"
+        }
+        BlackKing.Environment.writefile("BlackKing/UserData.json", Services.HttpService:JSONEncode(Data))
+    end
+
+    local UserData = BlackKing.Environment.readfile("BlackKing/UserData.json")
+    local Decoded = Services.HttpService:JSONDecode(UserData)
+    if not Decoded.TotalExecutions then
+        Decoded.TotalExecutions = 0    
+    end
+
+    Decoded.TotalExecutions = Decoded.TotalExecutions + 1
+
+    if not Decoded.UILibrary then
+        Decoded.UILibrary = "Obsidian"
+    end
+
+    BlackKing.TotalExecutions = Decoded.TotalExecutions
+    BlackKing.UILibrary = Decoded.UILibrary
+
+    BlackKing.Environment.writefile("BlackKing/UserData.json", Services.HttpService:JSONEncode(Decoded))
+end
+
+BlackKing.Interface = loadstring(game:HttpGet(BaseUrl .. "Components/Interface.luau"))()
+
+
+local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
 local Library = BlackKing.Interface.Library
@@ -41,6 +104,7 @@ local Objects = {
 	Currency = {},
 	Ladders = {},
 	Obstructions = {},
+	PowerUps = {},
 	EventTriggers = {},
 	JumpscareModules = {},
 	SeekHighlights = {},
@@ -1391,11 +1455,38 @@ Gb.Exploits_Anti:AddToggle("BypassGloombatEggs",   { Text = "Anti Gloombat Eggs"
 Gb.Exploits_Anti:AddToggle("BypassSeekObstructions", { Text = "Anti Seek Obstructions", Default = false, Tooltip = "Prevents obstacles in the 'Seek' chase from harming you." })
 Gb.Exploits_Anti:AddToggle("BypassVacuum",         { Text = "Anti Vacuum",           Default = false, Tooltip = "Prevents you from falling into 'Vacuum' fake doors." })
 Gb.Exploits_Anti:AddToggle("BypassKillbricks",     { Text = "Anti Killbricks",       Default = false, Tooltip = "Prevents 'Lava' from hurting you." })
-Gb.Exploits_Anti:AddToggle("BypassSeekingWall",    { Text = "Anti Seeking Wall",     Default = false, Tooltip = "Prevents 'ScaryWall' from hurting you." })
+Gb.Exploits_Anti:AddToggle("BypassSeekingWall",    { Text = "Anti Seek Wall",     Default = false, Tooltip = "Prevents 'ScaryWall' from hurting you." })
 Gb.Exploits_Anti:AddToggle("BypassSnare",          { Text = "Anti Snare",            Default = false, Tooltip = "Prevents 'Snare' from trapping you." })
 Gb.Exploits_Anti:AddToggle("BypassBanana",         { Text = "Anti Banana",           Default = false, Tooltip = "Prevents 'Banana Peel' from slipping you up (sometimes doesn't work)." })
 Gb.Exploits_Anti:AddToggle("BypassJeff",           { Text = "Anti Jeff (FE)",             Default = false, Tooltip = "Prevents 'Jeff the Killer' from stabbing you (sometimes doesn't work)." })
+Gb.Exploits_Anti:AddToggle("BypassMandrake", {
+    Text = "Anti Mandrake (FE)",
+    Default = false,
+    Tooltip = "Prevents 'Mandrake' from attacking you."
+})
 
+Toggles.BypassMandrake:OnChanged(function(Value)
+    for _, Object in Objects.Entities do
+        if Object.Name == "Root" and Object:IsA("BasePart") then
+
+            local BF = Object:FindFirstChild("AntiMandrakeForce")
+
+            if Value then
+                if not BF then
+                    BF = Instance.new("BodyForce")
+                    BF.Name = "AntiMandrakeForce"
+                    BF.Parent = Object
+                end
+
+                BF.Force = Vector3.new(100000, -99999999, 100000)
+            else
+                if BF then
+                    BF:Destroy()
+                end
+            end
+        end
+    end
+end)
 
 Toggles.BypassGiggle:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
@@ -1515,7 +1606,15 @@ Gb.Exploits_Troll:AddToggle("TwerkDance", {
 Gb.Exploits_Troll:AddToggle("OrbitStuff", { 
     Text = "Orbit Items", 
     Default = false, 
+    Disabled = Floor == "Party",
+    DisabledTooltip = Floor == "Party" and "Orbit items is disabled on this floor." or nil,
     Tooltip = "Spins items that are dropped around you." 
+})
+
+Gb.Exploits_Troll:AddToggle("OrbitHidePrompts", { 
+    Text = "Hide Prompts", 
+    Default = false, 
+    Tooltip = "Hides prompts when orbiting items." 
 })
 Gb.Exploits_Troll:AddSlider("OrbitSpeed", { Text = "Orbit Speed", Min = 2, Max = 5, Default = 2, Rounding = 1 })
 Gb.Exploits_Troll:AddSlider("OrbitYOffset", { Text = "Orbit Y Offset", Min = 0, Max = 2, Default = 2, Rounding = 1 })
@@ -1526,8 +1625,26 @@ Toggles.OrbitStuff:OnChanged(function(Value)
     if Value then
         task.spawn(function()
             while Toggles.OrbitStuff.Value do
-                local t = tick()
                 local items = Drops:GetChildren()
+                if Toggles.OrbitHidePrompts.Value then
+                    for _, item in ipairs(items) do
+                        for _, obj in ipairs(item:GetDescendants()) do
+                            if obj:IsA("ProximityPrompt") then
+                                obj.Enabled = false
+                            end
+                        end
+                    end
+                else
+                    for _, item in ipairs(items) do
+                        for _, obj in ipairs(item:GetDescendants()) do
+                            if obj:IsA("ProximityPrompt") then
+                                obj.Enabled = true
+                            end
+                        end
+                    end
+                end
+
+                local t = tick()
                 local count = #items
 
                 for i, drop in ipairs(items) do
@@ -1594,7 +1711,6 @@ Gb.Exploits_BypassRight:AddDropdown("TeleportManipulationMode", {
 	Values = {"Pivot", "Velocity"}, Text = "Manipulation Method",
 	Default = 1,
 })
-
 Gb.Exploits_BypassRight:AddDivider()
 Gb.Exploits_BypassRight:AddToggle("InfiniteItemsToggle", {
 	Text = "Infinite Items", Default = false,
@@ -2224,12 +2340,12 @@ Gb.Floors_Completion:AddButton({
     Tooltip = "Automatically teleports to and interacts with each water pump.",
     Func = function()
         if LatestRoom.Value < 50 or Floor ~= "Mines" then
-			Functions.Notify({ Title = "BlackKing", Body = "You must be in Room 150 to do this", Image = George})
+			Functions.Notify({ Title = "BlackKing", Body = "You must be in Room 150 to do this"})
             return
         end
 
         if Globals.AnticheatDisabled ~= true then
-			Functions.Notify({ Title = "BlackKing", Body = "Please Climb on the ladder to disable the anticheat", Image = George})
+			Functions.Notify({ Title = "BlackKing", Body = "Please Climb on the ladder to disable the anticheat"})
             return
         end
 
@@ -2283,7 +2399,7 @@ Gb.Floors_Completion:AddButton({
 
                         Running = false
 
-						Functions.Notify({ Title = "BlackKing", Body = "Successfully completed the nest, please interact with the button to proceed.", Image = George})
+						Functions.Notify({ Title = "BlackKing", Body = "Successfully completed the nest, please interact with the button to proceed."})
                     end
 
                     break
@@ -2312,7 +2428,6 @@ Gb.Floors_Completion:AddButton({
         end)
     end
 })
-
 Gb.Floors_Completion:AddButton({
     Text = "Auto Complete Cringle",
     Tooltip = "Instantly completes the quest.",
@@ -2323,7 +2438,71 @@ Gb.Floors_Completion:AddButton({
         end
     end
 })
+Gb.Floors_Completion:AddButton({
+    Text = "Auto Complete maze (Outdoors)",
+    Tooltip = "Instantly completes the maze.",
+    Func = function()
+        if LatestRoom.Value < 35 or Floor ~= "Garden" then
+            Functions.Notify({ Title = "BlackKing", Body = "You must be in Room 35 to do this (Outdoors)"})
+            return
+        end
+        local Maze = CurrentRooms:FindFirstChild("MazeContents", true)
+        if not Maze then return end
+        local GiantVines = Maze:FindFirstChild("GiantVines")
+        if not GiantVines then return end
+        local function ActivateLever(lever)
+            local prompt = lever:FindFirstChild("ActivateEventPrompt")
+            if not prompt then return end
+            while true do
+                if lever:GetAttribute("Activated") == true then
+                    break
+                end
+                if not prompt.Enabled then
+                    break
+                end
+                Character:PivotTo(lever:GetPivot())
+                fireproximityprompt(prompt)
 
+                task.wait(0.2)
+            end
+        end
+        for _, vineSet in GiantVines:GetDescendants() do
+            if vineSet.Name == "VineGuillotine" then
+                local FirstLever = vineSet:FindFirstChild("Lever")
+                if FirstLever then
+                    ActivateLever(FirstLever)
+                end
+                for _, obj in vineSet:GetDescendants() do
+                    if obj.Name == "Lever" then
+                        if obj:GetAttribute("Activated") == true then
+                            continue
+                        end
+                        local prompt = obj:FindFirstChild("ActivateEventPrompt")
+                        if not (prompt and prompt.Enabled) then
+                            continue
+                        end
+                        ActivateLever(obj)
+                    end
+                end
+            end
+        end
+        local allActivated = true
+        for _, obj in GiantVines:GetDescendants() do
+            if obj.Name == "Lever" then
+                if obj:GetAttribute("Activated") ~= true then
+                    allActivated = false
+                    break
+                end
+            end
+        end
+        if allActivated then
+            Functions.Notify({
+                Title = "Successfully Completed The Maze Room",
+                Body = "Now you can go to the end"
+            })
+        end
+    end
+})
 Gb.Floors_Visuals = Tabs.Floors:AddLeftGroupbox("Visuals")
 Gb.Floors_Visuals:AddToggle("ShowSeekPathToggle", {
 	Text = "Show Seek Path", Default = false, Tooltip = "Shows you the correct path in seek chases.",
@@ -3030,9 +3209,27 @@ Functions.HandleObject = function(Object)
 			Functions.BlacklistESP(Object)
 		end)
 		table.insert(Objects.Objectives, Object)
-	elseif Name == "MandrakeLive" then
-		if Toggles.ObjectiveESPToggle.Value and Options.EntityESPOptions.Value["Mandrake Hole"] then Functions.AddESP({ Object = Object.Hole, Text = "Mandrake Hole", Color = Options.EntityESPColor.Value }, true) end
-		table.insert(Objects.Entities, Object.Hole)
+elseif Name == "MandrakeLive" then
+    local Mandrake = Object:FindFirstChild("Mandrake")
+    if Mandrake then
+        local Root = Mandrake:FindFirstChild("Root")
+        if Root then
+            if Toggles.ObjectiveESPToggle.Value and Options.EntityESPOptions.Value["Mandrake Hole"] then
+                Functions.AddESP({ Object = Object.Hole, Text = "Mandrake Hole", Color = Options.EntityESPColor.Value }, true)
+            end
+            table.insert(Objects.Entities, Object.Hole)
+            table.insert(Objects.Entities, Root)
+            if Toggles.BypassMandrake.Value then
+                local BF = Root:FindFirstChild("AntiMandrakeForce")
+                if not BF then
+                    BF = Instance.new("BodyForce")
+                    BF.Name = "AntiMandrakeForce"
+                    BF.Parent = Root
+                end
+                BF.Force = Vector3.new(100000, -99999999, 100000)
+            end
+        end
+end
 	elseif Name == "MinesGenerator" then
 		task.spawn(function()
 			task.wait(0.75)
@@ -3339,8 +3536,6 @@ Functions.HandleObject = function(Object)
 		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Giggle"] then Functions.AddESP({ Object = Object, Text = "Giggle", Color = Options.EntityESPColor.Value }, true) end
 		if Toggles.BypassGiggle.Value then Object:WaitForChild("Hitbox").CanTouch = false end
 		table.insert(Objects.Entities, Object)
-		elseif Name == "MandrakeLive" then
-    table.insert(Objects.Entities, Object)
 	elseif Name == "GloomPile" then
 		if Toggles.BypassGloombatEggs.Value then
 			for _, Part in Object:GetDescendants() do
