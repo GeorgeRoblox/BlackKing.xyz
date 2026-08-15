@@ -13,7 +13,7 @@ local Interface = {
 }
 
 Interface.ThemeManager.BuiltInThemes = {
-		["BlackKing"]      = { 1,  { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "0078ff", BackgroundColor = "1a1a1a", OutlineColor = "1a1b1d" } },
+		["Default"]      = { 1,  { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "0078ff", BackgroundColor = "1a1a1a", OutlineColor = "1a1b1d" } },
 		["BBot"]           = { 2,  { FontColor = "ffffff", MainColor = "1e1e1e", AccentColor = "7e48a3", BackgroundColor = "232323", OutlineColor = "141414" } },
 		["Fatality"]       = { 3,  { FontColor = "ffffff", MainColor = "1e1842", AccentColor = "c50754", BackgroundColor = "191335", OutlineColor = "3c355d" } },
 		["Jester"]         = { 4,  { FontColor = "ffffff", MainColor = "242424", AccentColor = "db4467", BackgroundColor = "1c1c1c", OutlineColor = "373737" } },
@@ -31,7 +31,7 @@ Interface.ThemeManager.BuiltInThemes = {
 		["Cyberpunk"]      = { 16, { FontColor = "f9f9f9", MainColor = "262335", AccentColor = "00ff9f", BackgroundColor = "1a1a2e", OutlineColor = "413c5e" } },
 		["Oceanic Next"]   = { 17, { FontColor = "d8dee9", MainColor = "1b2b34", AccentColor = "6699cc", BackgroundColor = "16232a", OutlineColor = "343d46" } },
 		["Material"]       = { 18, { FontColor = "eeffff", MainColor = "212121", AccentColor = "82aaff", BackgroundColor = "151515", OutlineColor = "424242" } },
-		["SirMeme"]      = { 19,  { FontColor = "ffffff", MainColor = "140d17", AccentColor = "00ff21", BackgroundColor = "000000", OutlineColor = "1a1b1d" } },
+		["SirMeme"]        = { 19,  { FontColor = "ffffff", MainColor = "140d17", AccentColor = "00ff21", BackgroundColor = "000000", OutlineColor = "1a1b1d" } },
 	}
 
 return Interface
