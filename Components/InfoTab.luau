@@ -1,5 +1,5 @@
 return function(Window)
-	local LatestChangelog = {
+	local LCH = {
 		"7/8/2026",
 		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
 		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
@@ -46,19 +46,8 @@ return function(Window)
 	User:AddLabel("Total Executions: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true)
 
 	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
-	for Index, Change in pairs(LatestChangelog) do
+	for Index, Change in pairs(LCH) do
 		Changelog:AddLabel(Change, true)
-	end
-
-	local Name, Version = BlackKing.Environment.identifyexecutor()
-	local Executor = InfoTab:AddRightGroupbox("Executor Info", "info")
-
-	for Index, Result in pairs(BlackKing.Environment.Results) do
-		-- fix for veloshitty 💔
-		Result = Result:gsub("<", "(")
-		Result = Result:gsub(">", ")")
-
-		Executor:AddLabel(Result, true)
 	end
 
 	local Community = InfoTab:AddLeftGroupbox("Community")
