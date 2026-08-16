@@ -25,5 +25,7 @@ Interface.ThemeManager.BuiltInThemes = {
 	["SirMeme"]   = { 10, { FontColor = "ffffff", MainColor = "140d17", AccentColor = "00ff21", BackgroundColor = "000000", OutlineColor = "1a1b1d" } },
 	["Anoled"]    = { 11, { FontColor = "ffffff", MainColor = "000000", AccentColor = "ff3131", BackgroundColor = "000000", OutlineColor = "000000" } },
 	["Cyber"]     = { 12, { FontColor = "e6f1ff", MainColor = "10151f", AccentColor = "00e5ff", BackgroundColor = "0a0d14", OutlineColor = "1e2735" } },
+	["Synthwave"] = { 13, { FontColor = "f0e6ff", MainColor = "2b1a4d", AccentColor = "ff6ec7", BackgroundColor = "1a0f2e", OutlineColor = "4d3d8f" } },
+	["Cipher"] = { 14, { FontColor = "d0ffd0", MainColor = "0b120b", AccentColor = "00ff66", BackgroundColor = "050805", OutlineColor = "1c2e1c" } },
 }
 return Interface
