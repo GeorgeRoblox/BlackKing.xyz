@@ -6,7 +6,9 @@ return function(Window)
 		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
 		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
 	}
-
+    local Games = {
+		"🟢 DOORS",
+	}
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
 			return BlackKing.Environment.cloneref(Object)
@@ -100,6 +102,23 @@ return function(Window)
 		return nil
 	end
 
+	local function formatTimeLeft(seconds)
+		local Days = math.floor(seconds / 86400)
+		local Hours = math.floor((seconds % 86400) / 3600)
+		local Minutes = math.floor((seconds % 3600) / 60)
+		local Secs = math.floor(seconds % 60)
+
+		if Days > 0 then
+			return Days .. "d " .. Hours .. "h " .. Minutes .. "m " .. Secs .. "s"
+		elseif Hours > 0 then
+			return Hours .. "h " .. Minutes .. "m " .. Secs .. "s"
+		elseif Minutes > 0 then
+			return Minutes .. "m " .. Secs .. "s"
+		else
+			return Secs .. "s"
+		end
+	end
+
 	local function getSubscriptionText(HWIDTable)
 		local Expiry = HWIDTable and HWIDTable[MyHWID]
 		local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
@@ -122,9 +141,8 @@ return function(Window)
 				})
 				local now = os.time() + (2 * 3600)
 				if expiryUnix > now then
-					local DaysLeft = math.floor((expiryUnix - now) / 86400)
-					local HoursLeft = math.floor(((expiryUnix - now) % 86400) / 3600)
-					return "<font color='rgb(0, 255, 0)'>Active (" .. DaysLeft .. "d " .. HoursLeft .. "h left)</font>"
+					local TimeLeft = expiryUnix - now
+					return "<font color='rgb(0, 255, 0)'>Active (" .. formatTimeLeft(TimeLeft) .. " left)</font>"
 				else
 					return "<font color='rgb(255, 0, 0)'>Expired</font>"
 				end
@@ -138,6 +156,9 @@ return function(Window)
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
+        for Index, GameStatuses in pairs(Games) do
+		SupportInfo:AddLabel(GameStatuses, true)
+	end
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
 	local HWIDTable = fetchHWIDTable()
