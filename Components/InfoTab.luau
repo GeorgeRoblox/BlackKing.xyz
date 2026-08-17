@@ -31,7 +31,7 @@ return function(Window)
 	local LocalPlayer = Services.Players.LocalPlayer
 	local InfoTab = Window:AddTab("Info", "user")
 
-	local User = InfoTab:AddLeftGroupbox("User Info", "user")
+	local User = InfoTab:AddLeftGroupbox("User", "user")
 
 	local ImageSize = Enum.ThumbnailSize.Size420x420
 	local ImageType = Enum.ThumbnailType.HeadShot
@@ -42,9 +42,19 @@ return function(Window)
 		Image = Content
 	})
 
-	User:AddLabel("User: " .. LocalPlayer.Name, true)
-	User:AddLabel("Total Executions: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true)
+local Hour = os.date("*t").hour
+local Greeting
+if Hour >= 5 and Hour < 12 then
+	Greeting = "Good Morning"
+elseif Hour >= 12 and Hour < 17 then
+	Greeting = "Good Afternoon"
+elseif Hour >= 17 and Hour < 21 then
+	Greeting = "Good Evening"
+else
+	Greeting = "Good Night"
+end
 
+User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this script you executed: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true .. "times.")
 	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
 	for Index, Change in pairs(LCH) do
 		Changelog:AddLabel(Change, true)
