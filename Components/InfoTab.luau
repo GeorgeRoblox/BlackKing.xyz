@@ -54,7 +54,11 @@ return function(Window)
 		Greeting = "Good Night"
 	end
 	User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this script you executed: " .. (BlackKing.TotalExecutions and tostring(BlackKing.TotalExecutions) or "N/A") .. " times.", true)
-
+    User:AddDivider()
+    User:AddButton("Copy Discord Invite", function()
+		toclipboard("https://dsc.gg/BlackKing")
+		Library:Notify("Discord invite copied.")
+	end)
 	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
 	for Index, Change in pairs(LCH) do
 		Changelog:AddLabel(Change, true)
@@ -91,8 +95,10 @@ return function(Window)
 	local ExpiryLower = ExpiryStr:lower()
 	local SubscriptionText
 
-	if ExpiryLower == "lifetime" then
+	if ExpiryLower == "Lifetime" or ExpiryLower == "true" then
 		SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
+	elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
+		SubscriptionText = "<font color='rgb(255, 0, 0)'>Unknown</font>"
 	else
 		local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
 		if year then
@@ -123,10 +129,4 @@ return function(Window)
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 	HwidInfo:AddLabel("HWID: " .. MyHWID, true)
 	HwidInfo:AddLabel("Subscription: " .. SubscriptionText, true)
-
-	local Community = InfoTab:AddLeftGroupbox("Community")
-	Community:AddButton("Copy Discord Invite", function()
-		toclipboard("https://dsc.gg/BlackKing")
-		Library:Notify("Discord invite copied.")
-	end)
 end
