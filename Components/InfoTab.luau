@@ -65,8 +65,96 @@ User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this scrip
     local SupportInfo = InfoStuff:AddTab("", "folder")
     local HwidInfo = InfoStuff:AddTab("", "settings")
 
-    SupportInfo:AddLabel("Lol")
-    HwidInfo:AddLabel("Hi")
+local GameList = {
+	[2440500124] = "Doors",
+}
+
+local PlaceId = game.PlaceId
+local CurrentGame = GameList[PlaceId] or "Unknown (" .. PlaceId .. ")"
+
+local function advancedHash(str)
+	local hash = 0
+	for i = 1, #str do
+		hash = (hash * 31 + str:byte(i)) % 4294967296
+	end
+	local out = {}
+	for i = 1, 16 do
+		hash = (hash * 1664525 + 1013904223) % 4294967296
+		out[i] = string.char((hash % 26) + 65)
+	end
+	return table.concat(out)
+end
+
+local function generateHashedId()
+	local id = game:GetService("RbxAnalyticsService"):GetClientId()
+	local h = advancedHash(id)
+	return string.format("%s-%s-%s-%s", h:sub(1,4), h:sub(5,8), h:sub(9,12), h:sub(13,16))
+end
+
+local MyHWID = generateHashedId()
+
+local ok, HWIDTable = pcall(function()
+	return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
+end)
+if not ok or type(HWIDTable) ~= "table" then
+	warn("Failed to fetch HWID list")
+	return
+end
+
+local ExpiryStr = tostring(Expiry):gsub("^%s+", ""):gsub("%s+$", "")
+local ExpiryLower = ExpiryStr:lower()
+local SubscriptionText
+
+if ExpiryLower == "lifetime" then
+	getgenv().it = true
+	print(getgenv().it)
+	SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
+	Notify("BlackKing", "Buyer: " .. MyHWID .. " | Lifetime")
+else
+	local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
+	if not year then
+		getgenv().it = nil
+		SubscriptionText = "<font color='rgb(255, 0, 0)'>Unknown</font>"
+	else
+		local expiryUnix = os.time({
+			year = tonumber(year),
+			month = tonumber(month),
+			day = tonumber(day),
+			hour = tonumber(hour),
+			min = tonumber(minute),
+			sec = 0
+		})
+
+		local now = os.time() + (2 * 3600)
+
+		if expiryUnix > now then
+			getgenv().it = true
+			print(getgenv().it)
+			local DaysLeft = math.floor((expiryUnix - now) / 86400)
+			SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (" .. DaysLeft .. "d left)</font>"
+			Notify("BlackKing", "Buyer: " .. MyHWID .. " | Valid until " .. ExpiryStr .. " (" .. DaysLeft .. "d left)")
+		else
+			getgenv().it = nil
+			SubscriptionText = "<font color='rgb(255, 0, 0)'>Expired</font>"
+			warn("BlackKing: Key expired: " .. ExpiryStr)
+			game:GetService("StarterGui"):SetCore("SendNotification", {
+				Title = "BlackKing",
+				Text = "Key expired: " .. Expiry,
+				Duration = 5,
+				Button1 = "Copy Discord Invite",
+				Callback = function(Button)
+					if Button == "Button1" then
+						CopyToClipboard(DiscordInvite)
+					end
+				end
+			})
+			return
+		end
+	end
+end
+
+SupportInfo:AddLabel("Game: " .. CurrentGame, true)
+HwidInfo:AddLabel("Subscription: " .. SubscriptionText, true)
 
 	local Community = InfoTab:AddLeftGroupbox("Community")
 	Community:AddButton("Copy Discord Invite", function()
