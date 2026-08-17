@@ -50,9 +50,9 @@ return function(Window)
 		Changelog:AddLabel(Change, true)
 	end
 
-    local InfoStuff = InfoTab:AddRightTabbox("Stuff / stuff")
-    local SupportInfo = InfoStuff:AddTab("pen-line")
-    local HwidInfo = InfoStuff:AddTab("smile")
+    local InfoStuff = InfoTab:AddRightTabbox("idk how to call this :content:")
+    local SupportInfo = InfoStuff:AddTab("", "folder")
+    local HwidInfo = InfoStuff:AddTab("", "settings")
 
     SupportInfo:AddLabel("Lol")
     HwidInfo:AddLabel("Hi")
