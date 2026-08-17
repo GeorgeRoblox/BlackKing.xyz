@@ -31,7 +31,7 @@ return function(Window)
 	local LocalPlayer = Services.Players.LocalPlayer
 	local InfoTab = Window:AddTab("Info", "user")
 
-	local Changelog = InfoTab:AddLeftGroupbox("Changelog", "pen-line")
+	local Changelog = InfoTab:AddLeftGroupbox("Changelog", "pen-line", {Size = UDim2.new(0, 300, 0, 200)})
 	for Index, Change in pairs(LCH) do
 		Changelog:AddLabel(Change, true)
 	end
