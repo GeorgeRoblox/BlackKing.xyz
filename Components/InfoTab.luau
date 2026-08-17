@@ -54,8 +54,8 @@ return function(Window)
 		Greeting = "Good Night"
 	end
 	User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this script you executed: " .. (BlackKing.TotalExecutions and tostring(BlackKing.TotalExecutions) or "N/A") .. " times.", true)
-    User:AddDivider()
-    User:AddButton("Copy Discord Invite", function()
+	User:AddDivider()
+	User:AddButton("Copy Discord Invite", function()
 		toclipboard("https://dsc.gg/BlackKing")
 		Library:Notify("Discord invite copied.")
 	end)
@@ -90,12 +90,20 @@ return function(Window)
 
 	local MyHWID = generateHashedId()
 
-	local Expiry = BlackKing.Expiry or "N/A"
-	local ExpiryStr = tostring(Expiry):gsub("^%s+", ""):gsub("%s+$", "")
+	local ok, HWIDTable = pcall(function()
+		return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
+	end)
+
+	local Expiry
+	if ok and type(HWIDTable) == "table" then
+		Expiry = HWIDTable[MyHWID]
+	end
+
+	local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
 	local ExpiryLower = ExpiryStr:lower()
 	local SubscriptionText
 
-	if ExpiryLower == "Lifetime" or ExpiryLower == "true" then
+	if ExpiryLower == "lifetime" or ExpiryLower == "true" then
 		SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
 	elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
 		SubscriptionText = "<font color='rgb(255, 0, 0)'>Unknown</font>"
@@ -128,5 +136,6 @@ return function(Window)
 
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 	HwidInfo:AddLabel("HWID: " .. MyHWID, true)
+    HwidInfo:AddDivider()
 	HwidInfo:AddLabel("Subscription: " .. SubscriptionText, true)
 end
