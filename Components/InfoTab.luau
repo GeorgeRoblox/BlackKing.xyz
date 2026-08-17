@@ -31,7 +31,12 @@ return function(Window)
 	local LocalPlayer = Services.Players.LocalPlayer
 	local InfoTab = Window:AddTab("Info", "user")
 
-	local User = InfoTab:AddLeftGroupbox("User Info", "user")
+	local Changelog = InfoTab:AddLeftGroupbox("Changelog", "pen-line")
+	for Index, Change in pairs(LCH) do
+		Changelog:AddLabel(Change, true)
+	end
+
+	local User = InfoTab:AddLeftGroupbox("User", "user")
 
 	local ImageSize = Enum.ThumbnailSize.Size420x420
 	local ImageType = Enum.ThumbnailType.HeadShot
@@ -44,11 +49,6 @@ return function(Window)
 
 	User:AddLabel("User: " .. LocalPlayer.Name, true)
 	User:AddLabel("Total Executions: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true)
-
-	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
-	for Index, Change in pairs(LCH) do
-		Changelog:AddLabel(Change, true)
-	end
 
 	local Community = InfoTab:AddLeftGroupbox("Community")
 	Community:AddButton("Copy Discord Invite", function()
