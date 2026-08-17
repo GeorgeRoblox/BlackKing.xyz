@@ -90,43 +90,47 @@ return function(Window)
 
 	local MyHWID = generateHashedId()
 
-	local ok, HWIDTable = pcall(function()
-		return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
-	end)
-
-	local Expiry
-	if ok and type(HWIDTable) == "table" then
-		Expiry = HWIDTable[MyHWID]
+	local function fetchHWIDTable()
+		local ok, Result = pcall(function()
+			return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
+		end)
+		if ok and type(Result) == "table" then
+			return Result
+		end
+		return nil
 	end
 
-	local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
-	local ExpiryLower = ExpiryStr:lower()
-	local SubscriptionText
+	local function getSubscriptionText(HWIDTable)
+		local Expiry = HWIDTable and HWIDTable[MyHWID]
+		local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
+		local ExpiryLower = ExpiryStr:lower()
 
-	if ExpiryLower == "lifetime" or ExpiryLower == "true" then
-		SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
-	elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
-		SubscriptionText = "<font color='rgb(255, 0, 0)'>Unknown</font>"
-	else
-		local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
-		if year then
-			local expiryUnix = os.time({
-				year = tonumber(year),
-				month = tonumber(month),
-				day = tonumber(day),
-				hour = tonumber(hour),
-				min = tonumber(minute),
-				sec = 0
-			})
-			local now = os.time() + (2 * 3600)
-			if expiryUnix > now then
-				local DaysLeft = math.floor((expiryUnix - now) / 86400)
-				SubscriptionText = "<font color='rgb(0, 255, 0)'>Active (" .. DaysLeft .. "d left)</font>"
-			else
-				SubscriptionText = "<font color='rgb(255, 0, 0)'>Expired</font>"
-			end
+		if ExpiryLower == "lifetime" or ExpiryLower == "true" then
+			return "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
+		elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
+			return "<font color='rgb(255, 0, 0)'>Unknown</font>"
 		else
-			SubscriptionText = "<font color='rgb(255, 0, 0)'>Unknown</font>"
+			local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
+			if year then
+				local expiryUnix = os.time({
+					year = tonumber(year),
+					month = tonumber(month),
+					day = tonumber(day),
+					hour = tonumber(hour),
+					min = tonumber(minute),
+					sec = 0
+				})
+				local now = os.time() + (2 * 3600)
+				if expiryUnix > now then
+					local DaysLeft = math.floor((expiryUnix - now) / 86400)
+					local HoursLeft = math.floor(((expiryUnix - now) % 86400) / 3600)
+					return "<font color='rgb(0, 255, 0)'>Active (" .. DaysLeft .. "d " .. HoursLeft .. "h left)</font>"
+				else
+					return "<font color='rgb(255, 0, 0)'>Expired</font>"
+				end
+			else
+				return "<font color='rgb(255, 0, 0)'>Unknown</font>"
+			end
 		end
 	end
 
@@ -135,7 +139,17 @@ return function(Window)
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
+
+	local HWIDTable = fetchHWIDTable()
 	HwidInfo:AddLabel("HWID: " .. MyHWID, true)
-    HwidInfo:AddDivider()
-	HwidInfo:AddLabel("Subscription: " .. SubscriptionText, true)
+	HwidInfo:AddDivider()
+	local SubscriptionLabel = HwidInfo:AddLabel("Subscription: " .. getSubscriptionText(HWIDTable), true)
+
+	spawn(function()
+		while true do
+			task.wait(1)
+			HWIDTable = fetchHWIDTable()
+			SubscriptionLabel:SetText("Subscription: " .. getSubscriptionText(HWIDTable), true)
+		end
+	end)
 end
