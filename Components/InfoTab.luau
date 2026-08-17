@@ -54,7 +54,8 @@ else
 	Greeting = "Good Night"
 end
 
-User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this script you executed: " .. (BlackKing.TotalExecutions and BlackKing.TotalExecutions or "N/A"), true .. "times.")
+User:AddLabel(Greeting .. ", " .. LocalPlayer.Name .. ", ty for using this script you executed: " .. (BlackKing.TotalExecutions and tostring(BlackKing.TotalExecutions) or "N/A") .. " times.", true)
+
 	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
 	for Index, Change in pairs(LCH) do
 		Changelog:AddLabel(Change, true)
