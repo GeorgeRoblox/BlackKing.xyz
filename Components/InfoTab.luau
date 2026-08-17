@@ -124,7 +124,7 @@ return function(Window)
 		local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
 		local ExpiryLower = ExpiryStr:lower()
 
-		if ExpiryLower == "lifetime" or ExpiryLower == "true" then
+		if ExpiryLower == "Lifetime" or ExpiryLower == "true" then
 			return "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
 		elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
 			return "<font color='rgb(255, 0, 0)'>Unknown</font>"
@@ -156,9 +156,10 @@ return function(Window)
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
-        for Index, GameStatuses in pairs(Games) do
+    for Index, GameStatuses in pairs(Games) do
 		SupportInfo:AddLabel(GameStatuses, true)
 	end
+    SupportInfo:AddDivider()
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
 	local HWIDTable = fetchHWIDTable()
