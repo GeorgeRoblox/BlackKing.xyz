@@ -38,6 +38,14 @@ return function(Window)
 		end,
 	})
 
+	MenuGroup:AddToggle("AlwaysOnTop", {
+		Text = "Always On Top",
+		Default = Window.AlwaysOnTop,
+		Callback = function(Value)
+			Window:SetAlwaysOnTop(Value)
+		end,
+	})
+
 	MenuGroup:AddDropdown("UILibrary", {
 		Text = "UI Style",
 		Values = {
