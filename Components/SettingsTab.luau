@@ -46,6 +46,8 @@ return function(Window)
 		end,
 	})
 
+	MenuGroup:AddDivider()
+
 	MenuGroup:AddDropdown("UILibrary", {
 		Text = "UI Style",
 		Values = {
