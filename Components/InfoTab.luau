@@ -164,6 +164,10 @@ return function(Window)
 
 	local HWIDTable = fetchHWIDTable()
 	HwidInfo:AddLabel("HWID: " .. MyHWID, true)
+	HwidInfo:AddButton("Copy Hwid", function()
+		toclipboard(MyHWID, true)
+		Library:Notify("Hwid Copied.")
+	end)
 	HwidInfo:AddDivider()
 	local SubscriptionLabel = HwidInfo:AddLabel("Subscription: " .. getSubscriptionText(HWIDTable), true)
 
