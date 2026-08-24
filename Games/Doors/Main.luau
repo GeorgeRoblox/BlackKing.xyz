@@ -15,6 +15,14 @@ local FakePrompts = {}
 local Functions = {}
 local PartProperties = {}
 
+local function CloneReference(Object)
+    if BlackKing and BlackKing.Environment.cloneref then
+        return BlackKing.Environment.cloneref(Object)
+    else
+        return Object
+    end
+end
+
 local Services = setmetatable({}, {
 	__index = function(self, Name)
 		return CloneReference(game:GetService(Name))
