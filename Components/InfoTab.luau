@@ -1,10 +1,28 @@
 return function(Window)
 	local LCH = {
 		"7/8/2026",
-		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
-		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
+		"[SCRIPT]",
+		"<font color='rgb(0, 255, 0)'>+ Added Always On Top toggle in Settings tab.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Changed the Info tab.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added 5 new themes: Anoled, Cipher, Synthwave, Cyber, SirMeme.</font>",
+		"[DOORS]",
+		"<font color='rgb(0, 255, 0)'>+ New notification instead of the main one (LolhaxV3) in DOORS LOBBY.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added twerk animation (Lobby).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Changed locations of some toggles/buttons (Lobby).</font>",
+		"<font color='rgb(0, 255, 0)'>+ New notification instead of the main one (LolhaxV3) in DOORS (Lolhax V3 still available).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added twerk animation (Doors).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Made Anti Mandrake more consistent (FE).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Infinite Crucifix (less consistent).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Break Door Animations (FE).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added notify when ladder spawns.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added option to choose BlackKing notification position.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Fixed BlackKing notification volume.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added a useless button.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Trigger Figure.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Dropdown for selecting which players to kill (Trigger Figure).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Minecart Teleport (bad at high ping).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Fixed errors appearing on unload (might still have issues).</font>",
+
 	}
     local Games = {
 		"🟢 DOORS",
