@@ -15,6 +15,12 @@ local FakePrompts = {}
 local Functions = {}
 local PartProperties = {}
 
+local Services = setmetatable({}, {
+	__index = function(self, Name)
+		return CloneReference(game:GetService(Name))
+	end
+})
+
 local Objects = {
 	Prompts = {},
 	Objectives = {},
