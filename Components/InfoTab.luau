@@ -143,7 +143,7 @@ return function(Window)
 		local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
 		local ExpiryLower = ExpiryStr:lower()
 
-		if ExpiryLower == "Lifetime" or ExpiryLower == "true" then
+		if ExpiryLower == "lifetime" or ExpiryLower == "true" then
 			return "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
 		elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
 			return "<font color='rgb(255, 0, 0)'>Unknown</font>"
