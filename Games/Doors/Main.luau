@@ -1,3 +1,181 @@
+if BlackKing then
+    return
+end
+getgenv().BlackKing = {
+    Legit = true
+}
+
+local GameList = {
+  [2440500124] = "Doors"
+}
+
+local BaseUrl = "https://raw.githubusercontent.com/GeorgeRoblox/BlackKing.xyz/refs/heads/main/"
+getgenv().BlackKing = {
+    Environment = loadstring(game:HttpGet(BaseUrl .. "Components/Environment.luau"))(),
+    ESPLibrary = loadstring(game:HttpGet(BaseUrl .. "Components/ESPLibrary.luau"))(),
+
+    Legit = true,
+}
+
+local function CloneReference(Object)
+	if BlackKing and BlackKing.Environment.cloneref then
+		return BlackKing.Environment.cloneref(Object)
+	else
+		return Object
+	end
+end
+
+local Services = setmetatable({}, {
+	__index = function(self, Name)
+		return CloneReference(game:GetService(Name))
+	end
+})
+
+local function advancedHash(str)
+    local hash = 0
+    for i = 1, #str do
+        hash = (hash * 31 + str:byte(i)) % 4294967296
+    end
+    local out = {}
+    for i = 1, 16 do
+        hash = (hash * 1664525 + 1013904223) % 4294967296
+        out[i] = string.char((hash % 26) + 65)
+    end
+    return table.concat(out)
+end
+
+local function generateHashedId()
+    local id = game:GetService("RbxAnalyticsService"):GetClientId()
+    local h = advancedHash(id)
+    return string.format("%s-%s-%s-%s", h:sub(1,4), h:sub(5,8), h:sub(9,12), h:sub(13,16))
+end
+
+local MyHWID = generateHashedId()
+
+local ok, HWIDTable = pcall(function()
+    return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
+end)
+if not ok or type(HWIDTable) ~= "table" then
+    return
+end
+
+local function Notify(Title, Text)
+    game:GetService("StarterGui"):SetCore("SendNotification", { Title = Title, Text = Text, Duration = 5 })
+end
+
+local DiscordInvite = "https://dsc.gg/BlackKing"
+
+local function CopyToClipboard(Text)
+	local Env = BlackKing.Environment
+	local methods = {
+		Env.writeclipboard, Env.setclipboard, Env.toclipboard,
+		toclipboard, setclipboard, writeclipboard,
+	}
+	if Clipboard and Clipboard.set then
+		table.insert(methods, 1, Clipboard.set)
+	end
+	if set_clipboard then
+		table.insert(methods, set_clipboard)
+	end
+	for _, fn in methods do
+		if pcall(fn, Text) then return true end
+	end
+	return false
+end
+
+local Expiry = HWIDTable[MyHWID]
+if not Expiry then
+    getgenv().it = nil
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "BlackKing",
+        Text = "Key not found: " .. MyHWID,
+        Duration = 5,
+        Button1 = "Copy Discord Invite",
+        Callback = function(Button)
+            if Button == "Button1" then
+                CopyToClipboard(DiscordInvite)
+            end
+        end
+    })
+    return
+end
+
+local ExpiryStr = tostring(Expiry):gsub("^%s+", ""):gsub("%s+$", "")
+local ExpiryLower = ExpiryStr:lower()
+
+if ExpiryLower == "lifetime" then
+    getgenv().it = true
+    Notify("BlackKing", "Buyer: " .. MyHWID .. " | Lifetime")
+else
+    local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
+    if not year then
+        getgenv().it = nil
+        return
+    end
+
+    local expiryUnix = os.time({
+        year = tonumber(year),
+        month = tonumber(month),
+        day = tonumber(day),
+        hour = tonumber(hour),
+        min = tonumber(minute),
+        sec = 0
+    })
+
+    local now = os.time() + (2 * 3600)
+
+    if expiryUnix > now then
+        getgenv().it = true
+        local DaysLeft = math.floor((expiryUnix - now) / 86400)
+        Notify("BlackKing", "Buyer: " .. MyHWID .. " | Valid until " .. ExpiryStr .. " (" .. DaysLeft .. "d left)")
+    else
+        getgenv().it = nil
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "BlackKing",
+            Text = "Key expired: " .. Expiry,
+            Duration = 5,
+            Button1 = "Copy Discord Invite",
+            Callback = function(Button)
+                if Button == "Button1" then
+                    CopyToClipboard(DiscordInvite)
+                end
+            end
+        })
+        return
+    end
+end
+
+
+if BlackKing.Environment.writefile and BlackKing.Environment.readfile then
+    if not BlackKing.Environment.isfile("BlackKing/UserData.json") then
+        local Data = {
+            TotalExecutions = 0,
+            UILibrary = "Obsidian"
+        }
+        BlackKing.Environment.writefile("BlackKing/UserData.json", Services.HttpService:JSONEncode(Data))
+    end
+
+    local UserData = BlackKing.Environment.readfile("BlackKing/UserData.json")
+    local Decoded = Services.HttpService:JSONDecode(UserData)
+    if not Decoded.TotalExecutions then
+        Decoded.TotalExecutions = 0    
+    end
+
+    Decoded.TotalExecutions = Decoded.TotalExecutions + 1
+
+    if not Decoded.UILibrary then
+        Decoded.UILibrary = "Obsidian"
+    end
+
+    BlackKing.TotalExecutions = Decoded.TotalExecutions
+    BlackKing.UILibrary = Decoded.UILibrary
+
+    BlackKing.Environment.writefile("BlackKing/UserData.json", Services.HttpService:JSONEncode(Decoded))
+end
+
+BlackKing.Interface = loadstring(game:HttpGet(BaseUrl .. "Components/Interface.luau"))()
+
+
 local LoadStart = tick()
 BlackKing.SavePath = "Doors/Game"
 
@@ -8,26 +186,14 @@ local ThemeManager = BlackKing.Interface.ThemeManager
 local Toggles = Library.Toggles
 local Options = Library.Options
 
+
+
 local Global = {}
 local Conns = {}
 local ESPConns = {}
 local FakePrompts = {}
 local Functions = {}
 local PartProperties = {}
-
-local function CloneReference(Object)
-    if BlackKing and BlackKing.Environment.cloneref then
-        return BlackKing.Environment.cloneref(Object)
-    else
-        return Object
-    end
-end
-
-local Services = setmetatable({}, {
-	__index = function(self, Name)
-		return CloneReference(game:GetService(Name))
-	end
-})
 
 local Objects = {
 	Prompts = {},
@@ -69,6 +235,14 @@ local Entities = {
 	["RushMoving"] = {
 		Name = "Rush",
 		NotifyMessage = { Title = "Entity 'Rush' has spawned.", Body = "Find a hiding spot." }
+	},
+	["BashMoving"] = {
+		Name = "Bash",
+		NotifyMessage = { Title = "Entity 'Bash' has spawned.", Body = "Find a hiding spot." }
+	},
+	["Scribbles"] = {
+		Name = "Scribbles",
+		NotifyMessage = { Title = "Entity 'Scribbles' has spawned.", Body = "Find a hiding spot." }
 	},
 	["AmbushMoving"] = {
 		Name = "Ambush",
@@ -133,6 +307,10 @@ local Entities = {
 	["SallyMoving"] = {
 		Name = "Sally",
 		NotifyMessage = { Title = "Entity 'Sally' has spawned.", Body = "Drop an item for her." }
+	},
+	["DronesStampede"] = {
+		Name = "Stampede of Drones",
+		NotifyMessage = { Title = "Entity 'Stampede of Drones' has spawned.", Body = "Find a hiding spot or get out of the path." }
 	}
 }
 
@@ -157,6 +335,11 @@ local EntityIcons = {
 
 local ItemNames = {
 	["Lighter"]           = "Lighter",
+	["PaperPlane"]           = "Paper Plane",
+	["HoneyPot"]           = "Honey Pot",
+	["PaperPlanePickup"]           = "Paper Plane",
+	["FihFlakes"]           = "Fih Flakes",
+	["Pizza"]           = "Pizza",
 	["Flashlight"]        = "Flashlight",
 	["Lockpick"]          = "Lockpicks",
 	["Vitamins"]          = "Vitamins",
@@ -1379,12 +1562,13 @@ Toggles.AutoInteractToggle:AddKeyPicker("AutoInteractKeybind", {
 	Mode = "Toggle", SyncToggleState = true
 })
 Self_Automation:AddDropdown("AutoInteractIgnoreList", {
-	Text = "Ignore List",
-	Values = { "Glitch Fragments", "Jeff Items", "Dropped Items", "Currency", "Minecarts", "Locks" },
-	Default = { "Glitch Fragments", "Jeff Items", "Dropped Items", "Minecarts" },
-	Multi = true, AllowNull = true
-})
+ 	Text = "Ignore List",
+ 	Values = { "Glitch Fragments", "Jeff Items", "Dropped Items", "Currency", "Minecarts", "Locks", "Chairs" },
+ 	Default = { "Glitch Fragments", "Jeff Items", "Dropped Items", "Minecarts", "Chairs" },
+ 	Multi = true, AllowNull = true
+ })
 
+Self_Automation:AddDivider()
 Self_Misc:AddButton({
 	Text = "Play Again", Tooltip = "Makes you join a new run, click again to cancel.", DoubleClick = true,
 	Func = function() RemotesFolder.PlayAgain:FireServer() end
@@ -1428,6 +1612,7 @@ Exploits_Anti:AddToggle("BypassVacuum",         { Text = "Anti Vacuum",         
 Exploits_Anti:AddToggle("BypassKillbricks",     { Text = "Anti Killbricks",       Default = false, Tooltip = "Prevents 'Lava' from hurting you." })
 Exploits_Anti:AddToggle("BypassSeekingWall",    { Text = "Anti Seek Wall",     Default = false, Tooltip = "Prevents 'ScaryWall' from hurting you." })
 Exploits_Anti:AddToggle("BypassSnare",          { Text = "Anti Snare",            Default = false, Tooltip = "Prevents 'Snare' from trapping you." })
+Exploits_Anti:AddToggle("BypassDrones",          { Text = "Anti Drone",            Default = false, Tooltip = "Prevents 'Drones' from hurting you." })
 Exploits_Anti:AddToggle("BypassBanana",         { Text = "Anti Banana",           Default = false, Tooltip = "Prevents 'Banana Peel' from slipping you up (sometimes doesn't work)." })
 Exploits_Anti:AddToggle("BypassJeff",           { Text = "Anti Jeff (FE)",             Default = false, Tooltip = "Prevents 'Jeff the Killer' from stabbing you (sometimes doesn't work)." })
 Exploits_Anti:AddToggle("BypassMandrake", {
@@ -1437,6 +1622,19 @@ Exploits_Anti:AddToggle("BypassMandrake", {
     Disabled = not getgenv().it,
     DisabledTooltip = Global.PayedFeatueMessage
 })
+
+Toggles.BypassDrones:OnChanged(function(Value)
+	for _, Object in Objects.Entities do
+		if Object.Name == "Drones" then
+			local WalkedInto = Object:FindFirstChild(Value and "WalkedInto" or "_WalkedInto")
+			if WalkedInto then
+				WalkedInto.Name = Value and "_WalkedInto" or "WalkedInto"
+			end
+		end
+	end
+end)
+
+Exploits_Anti:AddToggle("BypassScribbles",         { Text = "Anti Scribbles",        Default = false, Tooltip = "Blocks 'Scribbles' damage and position updates." })
 
 Toggles.BypassMandrake:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
@@ -1465,6 +1663,7 @@ Toggles.BypassGiggle:OnChanged(function(Value)
 		end
 	end
 end)
+
 Toggles.BypassDupe:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Object.Name == "DoorFake" or Object.Name == "FakeDoor" then
@@ -1738,6 +1937,19 @@ end)
 Toggles.PositionSpoof:AddKeyPicker("PositionSpoof", {
 	Text = "Position Spoof", Default = "G", Mode = "Toggle", SyncToggleState = true
 })
+Exploits_BypassRight:AddToggle("AntiPuddle", {
+	Text = "Anti Puddle", Default = false, Tooltip = "Raises your HipHeight over the glass puddle and restores it when you leave."
+})
+local DefaultHipHeight = Humanoid and Humanoid.HipHeight or 2.396
+Conns.AntiPuddle = Services.RunService.Heartbeat:Connect(function()
+	if Toggles.AntiPuddle.Value and not Toggles.PositionSpoof.Value then
+		if Humanoid.FloorMaterial == Enum.Material.Glass then
+			if Humanoid.HipHeight ~= 3 then Humanoid.HipHeight = 3 end
+		else
+			if Humanoid.HipHeight ~= 2.396 then Humanoid.HipHeight = 2.396 end
+		end
+	end
+end)
 Toggles.AnitFigureHearing:OnChanged(function(Value)
 	if RemotesFolder:FindFirstChild("Crouch") then
 		RemotesFolder.Crouch:FireServer(Value and true or Functions.IsCrouching(), true)
@@ -2121,7 +2333,7 @@ Visuals_EntitySettings = Visuals_RightTab:AddTab("Settings")
 
 Visuals_Entities:AddDropdown("EntityList", {
 	Text = "Entity List",
-	Values = { "Rush","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==","Stampede of Drones" },
 	Multi = true, AllowNull = true
 })
 Visuals_Entities:AddToggle("NotifyEntities",    { Text = "Notify Entities",    Default = false, Tooltip = "Sends a notification when an entity spawns." })
@@ -2191,7 +2403,7 @@ end
 
 Visuals_ESP_Toggles:AddDropdown("EntityESPOptions",     { 
 	Text = "Entity List",
-	Values = { "Rush","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Ambush","Eyes","Dupe","Drones","Figure", "Teller", "Blitz","Lookman","Snare","Giggle","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
 	Multi = true,
 	AllowNull = true
 })
@@ -2218,6 +2430,7 @@ Toggles.EntityESPToggle:AddColorPicker("EntityESPColor",       { Text = "Entitie
 
 local ObjectiveLabels = {
 	["KeyObtain"]              = "Door Key",
+	["ArchivesTerminal"]              = "Terminal",
 	["ElectricalKeyObtain"]    = "Electrical Key",
 	["MinesGenerator"]         = "Generator",
 	["FuseObtain"]             = "Generator Fuse",
@@ -2262,7 +2475,8 @@ local HidingSpotLabels = {
 	Wardrobe = "Closet", ["Backdoor_Wardrobe"] = "Closet", Toolshed = "Closet",
 	RetroWardrobe = "Closet", ["Wardrobe-FOOLS26"] = "Closet",
 	Locker_Large = "Locker", Rooms_Locker = "Locker", Rooms_Locker_Fridge = "Locker",
-	Bed = "Bed", Double_Bed = "Double Bed", CircularVent = "Vent", Dumpster = "Dumpster"
+	Bed = "Bed", Double_Bed = "Double Bed", CircularVent = "Vent", Dumpster = "Dumpster", HidingSpot3 = "Closet",
+	HidingSpot1 = "Closet", HidingSpot2 = "Closet", 
 }
 local ChestLabels = {
 	ChestBox = true, ChestBoxLocked = true, Toolbox = true, Toolbox_Locked = true,
@@ -2270,14 +2484,15 @@ local ChestLabels = {
 }
 local EntityESPLabels = {
 	JeffTheKiller = "Jeff the Killer", GiggleCeiling = "Giggle",
-	Snare = "Snare", GrumbleRig = "Grumble",
+	Snare = "Snare", GrumbleRig = "Grumble",  TellerRig = "Teller",
+	Drones = "Drones",
 	Drakobloxxer = "Drakobloxxer", Hole = "Mandrake Hole", Groundskeeper = "Groundskeeper",
 	LiveEntityBramble = "Bramble", Figure = "Figure", FigureRig = "Figure", FigureRagdoll = "Figure",
-	FakeDoor = "Dupe", DoorFake = "Dupe"
+	FakeDoor = "Dupe", DoorFake = "Dupe",
 }
 
 local NodeEntities = {
-	Rush = true, Ambush = true, Eyes = true, Blitz = true, Lookman = true, ["A-60"] = true, ["A-120"] = true, Sally = true, ["Jeff The Killer"] = true, Monument = true, ["AR0xMBUSH"] = true, ["RNIUSHCG=="] = true
+	Rush = true, Ambush = true, Eyes = true, Blitz = true,Scribbles = true, Bash = true, Lookman = true, ["A-60"] = true, ["A-120"] = true, Sally = true, ["Jeff The Killer"] = true, Monument = true, ["AR0xMBUSH"] = true, ["RNIUSHCG=="] = true
 }
 
 Toggles.DoorESPToggle:OnChanged(function(Value)
@@ -2344,8 +2559,18 @@ Options.ChestESPColor:OnChanged(function(Value)
 	for _, Object in Objects.Chests do BlackKing.ESPLibrary:UpdateObjectColor(Object, Value) end
 end)
 
+local function IsHeldItem(Object)
+	if not Object or not LocalPlayer then return false end
+	local Char = LocalPlayer.Character
+	if Char and Object:IsDescendantOf(Char) then return true end
+	return Object:IsDescendantOf(LocalPlayer)
+end
+
 Toggles.ItemESPToggle:OnChanged(function(Value)
 	for _, Object in Objects.Items do
+		if IsHeldItem(Object) then
+			continue
+		end
 		if Value then
 			local Label = ItemNames[Object.Name] or (Object.Name == "Green_Herb" and "Green Herb")
 			if Label then
@@ -2379,18 +2604,31 @@ Options.CurrencyESPColor:OnChanged(function(Value)
 	for _, Object in Objects.Currency do BlackKing.ESPLibrary:UpdateObjectColor(Object, Value) end
 end)
 
+local function GetEntityESPObject(Object)
+	if Object.Name == "MonumentEntity" and Object:FindFirstChild("Top") then
+		return Object.Top
+	end
+	if Object.Name == "Drones" then
+		return Object:FindFirstChild("Root") or Object.PrimaryPart or Object:FindFirstChildWhichIsA("BasePart") or Object
+	end
+	if Object.Name == "TellerRig" then
+		return Object
+	end
+	return Object
+end
+
 Toggles.EntityESPToggle:OnChanged(function(Value)
 	for _, Object in Objects.Entities do
 		if Value then
 			local Label = EntityESPLabels[Object.Name]
 			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Name end
 			if Label and Options.EntityESPOptions.Value[Label] then
-				Functions.AddESP({ Object = Object, Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
+				Functions.AddESP({ Object = GetEntityESPObject(Object), Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
 			else
-				Functions.RemoveESP(Object)
+				Functions.RemoveESP(GetEntityESPObject(Object))
 			end
 		else
-			Functions.RemoveESP(Object)
+			Functions.RemoveESP(GetEntityESPObject(Object))
 		end
 	end
 end)
@@ -2401,18 +2639,18 @@ Options.EntityESPOptions:OnChanged(function(Value)
 			local Label = EntityESPLabels[Object.Name]
 			if not Label and Entities[Object.Name] then Label = Entities[Object.Name].Name end
 			if Label and Options.EntityESPOptions.Value[Label] then
-				Functions.AddESP({ Object = Object, Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
+				Functions.AddESP({ Object = GetEntityESPObject(Object), Text = Label, Color = Options.EntityESPColor.Value }, NodeEntities[Label] ~= true)
 			else
-				Functions.RemoveESP(Object)
+				Functions.RemoveESP(GetEntityESPObject(Object))
 			end
 		else
-			Functions.RemoveESP(Object)
+			Functions.RemoveESP(GetEntityESPObject(Object))
 		end
 	end
 end)
 
 Options.EntityESPColor:OnChanged(function(Value)
-	for _, Object in Objects.Entities do BlackKing.ESPLibrary:UpdateObjectColor(Object, Value) end
+	for _, Object in Objects.Entities do BlackKing.ESPLibrary:UpdateObjectColor(GetEntityESPObject(Object), Value) end
 end)
 
 Toggles.LadderESPToggle:OnChanged(function(Value)
@@ -2429,6 +2667,7 @@ Toggles.NotifyLadder:OnChanged(function(Value)
 		end
 	end
 end)
+
 Options.LadderESPColor:OnChanged(function(Value)
 	for _, Object in Objects.Ladders do BlackKing.ESPLibrary:UpdateObjectColor(Object, Value) end
 end)
@@ -3577,6 +3816,20 @@ Functions.HandleObject = function(Object)
 				table.insert(Objects.Objectives, Object)
 			end
 		end)
+	elseif Name == "ArchivesTerminal" then
+		task.spawn(function()
+			task.wait(0.5)
+			if Object.Parent and not Object:GetAttribute("Type") then
+				if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Archives Terminal", Color = Options.ObjectiveESPColor.Value }, true) end
+				Object:GetAttributeChangedSignal("Activated"):Once(function()
+					if Object:GetAttribute("Activated") == true then
+						Functions.RemoveESP(Object)
+						Functions.BlacklistESP(Object)
+					end
+				end)
+				table.insert(Objects.Objectives, Object)
+			end
+		end)
 	elseif Name == "ElectricalKeyObtain" then
 		task.spawn(function()
 			task.wait(0.5)
@@ -3608,7 +3861,7 @@ Functions.HandleObject = function(Object)
 			end
 		end
 		table.insert(Objects.Objectives, Object)
-	elseif Name == "LibraryHintPaper" or Name == "PickupItem" then
+	elseif (Name == "LibraryHintPaper" or Name == "PickupItem") and not IsHeldItem(Object) then
 		if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Paper", Color = Options.ObjectiveESPColor.Value }, true) end
 		table.insert(Objects.Objectives, Object)
 	elseif Name == "MinesAnchor" then
@@ -3748,6 +4001,15 @@ Functions.HandleObject = function(Object)
 			if Toggles.DoorESPToggle.Value then Functions.AddESP({ Object = HP, Text = GetDoorText(Object), Color = Options.DoorESPColor.Value }, true) end
 
 			KeepDoorTextSynced(Object, HP)
+		end
+	elseif Name == "ForgetMeNotVineDoors" then
+		local DoorParent = Object.Parent
+		if DoorParent and DoorParent.Name == LocalPlayer.Name then
+			local Base = Object:FindFirstChild("Base")
+			if Base and Base:GetAttribute("BaseDirection") then
+				if Toggles.ObjectiveESPToggle.Value then Functions.AddESP({ Object = Base, Text = "Wrong Door", Color = Options.ObjectiveESPColor.Value }, true) end
+				table.insert(Objects.Objectives, Base)
+			end
 		end
 	elseif Name == "PathLights" then
 		local ObjectsToHighlight = {}
@@ -3954,7 +4216,7 @@ Functions.HandleObject = function(Object)
 	elseif Name == "MouseHole" then
 		if Toggles.ChestESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Mouse", Color = Options.ChestESPColor.Value }, true) end
 		table.insert(Objects.Chests, Object)
-	elseif ItemNames[Name] and Object:FindFirstChild("ModulePrompt") then
+	elseif ItemNames[Name] and Object:FindFirstChild("ModulePrompt") and not IsHeldItem(Object) then
 		if Toggles.ItemESPToggle.Value then Functions.AddESP({ Object = Object, Text = ItemNames[Name], Color = Options.ItemESPColor.Value }, Object:GetAttribute("ParentRoom") ~= nil) end
 		if Name == "LotusHolder" or Name == "LotusPetalPickup" then
 			Object.Handle:GetPropertyChangedSignal("LocalTransparencyModifier"):Connect(function()
@@ -3964,7 +4226,10 @@ Functions.HandleObject = function(Object)
 		end
 
 		table.insert(Objects.Items, Object)
-	elseif Name == "Green_Herb" then
+	elseif (Name == "PaperPlanePickup" or Name == "PaperPlane") and not IsHeldItem(Object) then
+		if Toggles.ItemESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Paper Plane", Color = Options.ItemESPColor.Value }, Object:GetAttribute("ParentRoom") ~= nil) end
+		table.insert(Objects.Items, Object)
+	elseif Name == "Green_Herb" and not IsHeldItem(Object) then
 		if Toggles.ItemESPToggle.Value then Functions.AddESP({ Object = Object, Text = "Green Herb", Color = Options.ItemESPColor.Value }, true) end
 		table.insert(Objects.Items, Object)
 	elseif Name == "GoldPile" and Object:GetAttribute("GoldValue") then
@@ -3976,6 +4241,34 @@ Functions.HandleObject = function(Object)
 	elseif Name == "GiggleCeiling" then
 		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Giggle"] then Functions.AddESP({ Object = Object, Text = "Giggle", Color = Options.EntityESPColor.Value }, true) end
 		if Toggles.BypassGiggle.Value then Object:WaitForChild("Hitbox").CanTouch = false end
+		table.insert(Objects.Entities, Object)
+	elseif Name == "Drones" then
+		if Toggles.BypassDrones.Value then
+			local WalkedInto = Object:FindFirstChild("WalkedInto")
+			if WalkedInto then WalkedInto.Name = "_WalkedInto" end
+		end
+		local DroneConnection = Object.DescendantAdded:Connect(function(Part)
+			if Part.Name == "WalkedInto" and Toggles.BypassDrones.Value then
+				Part.Name = "_WalkedInto"
+			end
+		end)
+		table.insert(Conns, DroneConnection)
+		Object.Destroying:Once(function()
+			if DroneConnection then DroneConnection:Disconnect() end
+		end)
+		if not Object:FindFirstChildOfClass("Humanoid") then
+			Instance.new("Humanoid", Object).Name = "HighlightHumanoid"
+		end
+		local Root = Object:FindFirstChild("Root") or Object.PrimaryPart or Object:FindFirstChildWhichIsA("BasePart")
+		if Root then
+			Object.PrimaryPart = Root
+			Root.Transparency = 0.999
+			Root.Material = Enum.Material.Plastic
+			Root:SetAttribute("ParentRoom", Object:GetAttribute("SpawnRoom"))
+			if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Drones"] then
+				Functions.AddESP({ Object = Root, Text = "Drones", Color = Options.EntityESPColor.Value }, true)
+			end
+		end
 		table.insert(Objects.Entities, Object)
 	elseif Name == "GloomPile" then
 		if Toggles.BypassGloombatEggs.Value then
@@ -4090,6 +4383,29 @@ Functions.HandleObject = function(Object)
 		end
 	elseif Name == "GrumbleRig" then
 		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Grumble"] then Functions.AddESP({ Object = Object, Text = "Grumble", Color = Options.EntityESPColor.Value }, true) end
+		table.insert(Objects.Entities, Object)
+	elseif Name == "TellerRig" then
+		if not Object:FindFirstChildOfClass("Humanoid") then
+			Instance.new("Humanoid", Object).Name = "HighlightHumanoid"
+		end
+		local Root = Object:FindFirstChild("Root") or Object.PrimaryPart or Object:FindFirstChildWhichIsA("BasePart")
+		if Root then
+			Object.PrimaryPart = Root
+		end
+		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Teller"] then
+			local NumberLabel = Object:FindFirstChild("ScreenFrame") and Object.ScreenFrame:FindFirstChild("Screen") and Object.ScreenFrame.Screen:FindFirstChild("SurfaceGui") and Object.ScreenFrame.Screen.SurfaceGui:FindFirstChild("NumberLabel")
+			local function MakeLabel()
+				return NumberLabel and ("Teller [" .. tostring(NumberLabel.Text or NumberLabel) .. "]") or "Teller"
+			end
+			Functions.AddESP({ Object = Object, Text = MakeLabel(), Color = Options.EntityESPColor.Value }, Object:GetAttribute("ParentRoom") ~= nil)
+			if NumberLabel then
+				NumberLabel:GetPropertyChangedSignal("Text"):Connect(function()
+					if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Teller"] then
+						BlackKing.ESPLibrary:UpdateObjectText(Object, MakeLabel())
+					end
+				end)
+			end
+		end
 		table.insert(Objects.Entities, Object)
 	elseif Name == "LiveEntityBramble" then
 		if Toggles.EntityESPToggle.Value and Options.EntityESPOptions.Value["Bramble"] then Functions.AddESP({ Object = Object, Text = "Bramble", Color = Options.EntityESPColor.Value }, true) end
@@ -4309,23 +4625,24 @@ end)
 
 Global.ObjectQueue = {}
 local TrackedObjects = {
-	Lava=true, GoldPile=true, KeyObtain=true, Drakobloxxer=true, FuseObtain=true,
+	Lava=true, GoldPile=true, KeyObtain=true, ArchivesTerminal = true, Drakobloxxer=true, FuseObtain=true,
 	MinesGenerator=true, JeffTheKiller=true, Snare=true, FakeDoor=true, DoorFake=true, SideroomSpace=true,
 	ChestBox=true, ChestBoxLocked=true, Chest_Vine=true, Locker_Small_Locked=true, Toolbox=true,
-	Toolbox_Locked=true, Wardrobe=true, ["Wardrobe-FOOLS26"]=true, Toolshed=true, Toolshed_Small=true,
+	Toolbox_Locked=true, Wardrobe=true, HidingSpot1 = true, HidingSpot2 = true, HidingSpot3 = true, ["Wardrobe-FOOLS26"]=true, Toolshed=true, Toolshed_Small=true,
 	Bed=true, MinesAnchor=true, Double_Bed=true, RetroWardrobe=true, Backdoor_Wardrobe=true,
 	Rooms_Locker=true, Rooms_Locker_Fridge=true, Locker_Large=true, FigureRig=true, FigureRagdoll=true,
 	TimerLever=true, Lever=true, Seek_Arm=true, ChandelierObstruction=true, ScaryWall=true, Ladder=true,
-	CircularVent=true, Dumpster=true, SquareGrate=true, TriggerEventCollision=true, GrumbleRig=true,
+	CircularVent=true, Dumpster=true, SquareGrate=true, TriggerEventCollision=true, GrumbleRig=true, TellerRig=true,
 	GiggleCeiling=true, MinesGateButton=true, ElectricalKeyObtain=true, LibraryHintPaper=true,
 	WaterPump=true, CringlePresent=true, Wheel=true, PickupItem=true, LiveHintBook=true,
 	LiveBreakerPolePickup=true, LeverForGate=true, GloomPile=true, SeekFloodline=true, Door=true,
 	Green_Herb=true, Bridge=true, MouseHole=true, BananaPeel=true, NannerPeel=true, PowerupPad=true,
 	IndustrialGate=true, CollisionFloor=true, ElevatorCar=true, Wax_Door=true, ThingToOpen=true,
-	MovingDoor=true, StardustPickup=true, Hole=true, Groundskeeper=true, MandrakeLive=true,
-	GardenGateButton=true, LotusPetalPickup=true, VineGuillotine=true, LiveEntityBramble=true,
+	MovingDoor=true, StardustPickup=true, Hole=true, Groundskeeper=true, MandrakeLive=true, DronesStampede=true,
+	GardenGateButton=true, LotusPetalPickup=true, VineGuillotine=true, LiveEntityBramble=true, Drones=true,
 	RiftSpawn=true, ElevatorBreaker=true, RunnerNodes=true, PathLights=true, DuckBoard=true,
-	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true
+	Padlock=true, EyestalkEndCutscene=true, MinecartRig=true, SeekMovingNewClone=true,
+	ForgetMeNotVineDoors=true
 }
 
 Functions.QueueObject = function(Object)
@@ -4503,6 +4820,7 @@ Functions.TriggerPrompt = function(Prompt)
 	if pName == "TrackLever" then return end
 	if Prompt.Name == "PushPrompt" and Options.AutoInteractIgnoreList.Value["Minecarts"] then return end
 	if Prompt.Parent:GetAttribute("JeffShop") and Options.AutoInteractIgnoreList.Value["Jeff Items"] then return end
+	if Prompt.Name == "SeatPrompt" and Options.AutoInteractIgnoreList.Value["Chairs"] then return end
 	if (pName == "GoldPile" or pName == "StardustPickup") and Options.AutoInteractIgnoreList.Value["Currency"] then return end
 	if pName == "KeyObtainFake" or pName == "TithingPlate" then return end
 
@@ -4724,7 +5042,7 @@ Conns.FogHandler2 = Services.Lighting.DescendantAdded:Connect(function(Object)
 	table.insert(Global.FogInstances, Object)
 end)
 
-local RusherNames = { Rush=true, Ambush=true, Eyes=true, Lookman=true, Blitz=true, ["A-60"]=true, ["A-120"]=true, AR0xMBUSH=true, ["RNIUSHCG=="]=true, ["Custom Entity"]=true }
+local RusherNames = { Rush=true, Ambush=true, Eyes=true, Lookman=true, Scribbles = true, Bash = true, Drones = true, Blitz=true, ["A-60"]=true, ["A-120"]=true, AR0xMBUSH=true, ["RNIUSHCG=="]=true, ["Custom Entity"]=true }
 
 Conns.EntityHandler = Services.Workspace.ChildAdded:Connect(function(Entity)
 	local EntityData = Entities[Entity.Name]
@@ -4806,6 +5124,18 @@ Conns.Cleaner = Services.RunService.Heartbeat:Connect(function()
 			I -= 1
 		end
 	end
+
+	for _, Object in Objects.Items do
+		if IsHeldItem(Object) then
+			Functions.RemoveESP(Object)
+		end
+	end
+
+	for _, Object in Objects.Objectives do
+		if IsHeldItem(Object) then
+			Functions.RemoveESP(Object)
+		end
+	end
 end)
 
 local LastPromptFix = tick()
@@ -4882,6 +5212,10 @@ Library:OnUnload(function()
 		if Object.Name == "SideroomSpace" then
 			local Coll = Object:FindFirstChild("Collision")
 			if Coll then Coll.CanCollide = false Coll.CanTouch = true end
+		end
+		if Object.Name == "Drones" then
+			local WalkedInto = Object:FindFirstChild("_WalkedInto")
+			if WalkedInto then WalkedInto.Name = "WalkedInto" end
 		end
 	end
 
