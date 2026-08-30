@@ -1,25 +1,11 @@
 return function(Window)
 	local LCH = {
-		"29/8/2026",
-		"[DOORS]",
-		"<font color='rgb(0, 255, 0)'>+ Added Archives Support.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Drones.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Puddle.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Bash Notify.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Scribble Notify.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Stampede of Drones Notify.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Bash esp.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Scribble esp.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Drones esp.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Teller esp.</font>",
-		"Smth More",
-		
+		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
+	}
 
-	}
-    local Games = {
-		"🟢 DOORS",
-		"🔴 Universal",
-	}
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
 			return BlackKing.Environment.cloneref(Object)
@@ -80,113 +66,31 @@ return function(Window)
 	local GameList = {
 		[2440500124] = "Doors",
 	}
-	local CurrentGame = GameList[game.GameId] or "Universal (" .. game.GameId .. ")"
-
-	local function advancedHash(str)
-		local hash = 0
-		for i = 1, #str do
-			hash = (hash * 31 + str:byte(i)) % 4294967296
-		end
-		local out = {}
-		for i = 1, 16 do
-			hash = (hash * 1664525 + 1013904223) % 4294967296
-			out[i] = string.char((hash % 26) + 65)
-		end
-		return table.concat(out)
-	end
-
-	local function generateHashedId()
-		local id = game:GetService("RbxAnalyticsService"):GetClientId()
-		local h = advancedHash(id)
-		return string.format("%s-%s-%s-%s", h:sub(1,4), h:sub(5,8), h:sub(9,12), h:sub(13,16))
-	end
-
-	local MyHWID = generateHashedId()
-
-	local function fetchHWIDTable()
-		local ok, Result = pcall(function()
-			return loadstring(game:HttpGet("https://pastefy.app/RGZAbBBb/raw?t=" .. tick()))()
-		end)
-		if ok and type(Result) == "table" then
-			return Result
-		end
-		return nil
-	end
-
-	local function formatTimeLeft(seconds)
-		local Days = math.floor(seconds / 86400)
-		local Hours = math.floor((seconds % 86400) / 3600)
-		local Minutes = math.floor((seconds % 3600) / 60)
-		local Secs = math.floor(seconds % 60)
-
-		if Days > 0 then
-			return Days .. "d " .. Hours .. "h " .. Minutes .. "m " .. Secs .. "s"
-		elseif Hours > 0 then
-			return Hours .. "h " .. Minutes .. "m " .. Secs .. "s"
-		elseif Minutes > 0 then
-			return Minutes .. "m " .. Secs .. "s"
-		else
-			return Secs .. "s"
-		end
-	end
-
-	local function getSubscriptionText(HWIDTable)
-		local Expiry = HWIDTable and HWIDTable[MyHWID]
-		local ExpiryStr = tostring(Expiry or "N/A"):gsub("^%s+", ""):gsub("%s+$", "")
-		local ExpiryLower = ExpiryStr:lower()
-
-		if ExpiryLower == "lifetime" or ExpiryLower == "true" then
-			return "<font color='rgb(0, 255, 0)'>Active (Lifetime)</font>"
-		elseif ExpiryLower == "n/a" or ExpiryLower == "nil" or ExpiryLower == "unknown" then
-			return "<font color='rgb(255, 0, 0)'>Unknown</font>"
-		else
-			local year, month, day, hour, minute = ExpiryStr:match("(%d+)%-(%d+)%-(%d+)%s+(%d+):(%d+)")
-			if year then
-				local expiryUnix = os.time({
-					year = tonumber(year),
-					month = tonumber(month),
-					day = tonumber(day),
-					hour = tonumber(hour),
-					min = tonumber(minute),
-					sec = 0
-				})
-				local now = os.time() + (2 * 3600)
-				if expiryUnix > now then
-					local TimeLeft = expiryUnix - now
-					return "<font color='rgb(0, 255, 0)'>Active (" .. formatTimeLeft(TimeLeft) .. " left)</font>"
-				else
-					return "<font color='rgb(255, 0, 0)'>Expired</font>"
-				end
-			else
-				return "<font color='rgb(255, 0, 0)'>Unknown</font>"
-			end
-		end
-	end
+	local CurrentGame = GameList[game.GameId] or "Unknown (" .. game.GameId .. ")"
 
 	local InfoStuff = InfoTab:AddRightTabbox("idk how to call this :content:")
 	local SupportInfo = InfoStuff:AddTab("", "folder")
-	local HwidInfo = InfoStuff:AddTab("", "settings")
+	local Info = InfoStuff:AddTab("", "settings")
 
-    for Index, GameStatuses in pairs(Games) do
+	local changelogText = table.concat(LCH, "<br>")
+	InfoTab:UpdateWarningBox({
+	Title = "Latest Changelog",
+	Text = changelogText,
+	IsNormal = true, 
+	Visible = true,
+	LockSize = true,
+	})
+
+		local Games = {
+		"🟢 DOORS",
+		"🔴 Universal",
+	}
+
+	for Index, GameStatuses in pairs(Games) do
 		SupportInfo:AddLabel(GameStatuses, true)
 	end
-    SupportInfo:AddDivider()
+	SupportInfo:AddDivider()
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
-	local HWIDTable = fetchHWIDTable()
-	HwidInfo:AddLabel("HWID: " .. MyHWID, true)
-	HwidInfo:AddButton("Copy Hwid", function()
-		toclipboard(MyHWID, true)
-		Library:Notify("Hwid Copied.")
-	end)
-	HwidInfo:AddDivider()
-	local SubscriptionLabel = HwidInfo:AddLabel("Subscription: " .. getSubscriptionText(HWIDTable), true)
-
-	spawn(function()
-		while true do
-			task.wait(1)
-			HWIDTable = fetchHWIDTable()
-			SubscriptionLabel:SetText("Subscription: " .. getSubscriptionText(HWIDTable), true)
-		end
-	end)
-end
+	Info:AddLabel("FireBacon, Seikoso, Upio, Mstudio and Java for emotional support <3")
+	end
