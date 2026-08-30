@@ -1,9 +1,7 @@
 return function(Window)
 	local LCH = {
-		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
-		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
+		"<font color='rgb(0, 255, 0)'>+ New Info Tab.</font>",
+
 	}
 
 	local function CloneReference(Object)
@@ -58,10 +56,6 @@ return function(Window)
 		toclipboard("https://dsc.gg/BlackKing")
 		Library:Notify("Discord invite copied.")
 	end)
-	local Changelog = InfoTab:AddRightGroupbox("Changelog", "pen-line")
-	for Index, Change in pairs(LCH) do
-		Changelog:AddLabel(Change, true)
-	end
 
 	local GameList = {
 		[2440500124] = "Doors",
@@ -93,4 +87,4 @@ return function(Window)
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
 	Info:AddLabel("FireBacon, Seikoso, Upio, Mstudio and Java for emotional support <3")
-	end
+end
