@@ -1,6 +1,11 @@
 return function(Window)
 	local LCH = {
-		"<font color='rgb(0, 255, 0)'>+ New Info Tab.</font>",
+		"[DOORS]",
+		"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
+		"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
 
 	}
 
@@ -86,5 +91,5 @@ return function(Window)
 	SupportInfo:AddDivider()
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
-	Info:AddLabel("FireBacon, Seikoso, Upio, Mstudio and Java for emotional support <3")
+	Info:AddLabel("FireBacon, Seikoso, Upio, Mstudio\n and Java for emotional support <3")
 end
