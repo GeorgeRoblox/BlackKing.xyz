@@ -1,8 +1,12 @@
 return function(Window)
-	local LCH = {
-		"<font color='rgb(0, 255, 0)'>+ BlackKing Temu.</font>",
-
-	}
+local LCH = {
+    "[DOORS]\n",
+    "<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>\n",
+    "<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>\n",
+    "<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>\n",
+    "<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>\n",
+    "<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>\n",
+}
 
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
