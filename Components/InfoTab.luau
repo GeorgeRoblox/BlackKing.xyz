@@ -63,7 +63,7 @@ return function(Window)
 
 InfoTab:UpdateWarningBox({
     Title = "Latest Changelog",
-    Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font><br><b><font color='rgb(0, 255, 0)'>+ Abysall Hub V2.</font></b>",
+    Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font>\n<br><b><font color='rgb(0, 255, 0)'>+ Abysall Hub V2.</font></b>",
     IsNormal = true,
     Visible = true,
     LockSize = true,
