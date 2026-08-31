@@ -1,12 +1,12 @@
 return function(Window)
-local LCH = {
-	"[DOORS]",
-	"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
-	"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
-	"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
-	"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
-	"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
-}
+	local LCH = {
+		"[DOORS]",
+		"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
+		"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
+	}
 
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
@@ -70,48 +70,16 @@ local LCH = {
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local Info = InfoStuff:AddTab("", "settings")
 
-	local function AddScrollingChangelog(Tab, Title, Entries)
-		local Container = Tab.Container
+	local changelogText = table.concat(LCH, "<br>")
+	InfoTab:UpdateWarningBox({
+		Title = "Latest Changelog",
+		Text = changelogText,
+		IsNormal = true, 
+		Visible = true,
+		LockSize = true,
+	})
 
-		local Box = Instance.new("Frame")
-		Box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		Box.Position = UDim2.fromOffset(0, 7)
-		Box.Size = UDim2.new(1, 0, 0, 180)
-		Box.Parent = Container
-
-		local Scroll = Instance.new("ScrollingFrame")
-		Scroll.BackgroundTransparency = 1
-		Scroll.Size = UDim2.fromScale(1, 1)
-		Scroll.ScrollBarThickness = 3
-		Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
-		Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		Scroll.Parent = Box
-
-		local TitleLabel = Instance.new("TextLabel")
-		TitleLabel.BackgroundTransparency = 1
-		TitleLabel.Size = UDim2.new(1, -8, 0, 20)
-		TitleLabel.Text = Title
-		TitleLabel.TextSize = 14
-		TitleLabel.Font = Enum.Font.GothamBold
-		TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-		TitleLabel.Parent = Scroll
-
-		local Content = Instance.new("TextLabel")
-		Content.BackgroundTransparency = 1
-		Content.Position = UDim2.new(0, 0, 0, 20)
-		Content.Size = UDim2.new(1, -8, 0, 0)
-		Content.AutomaticSize = Enum.AutomaticSize.Y
-		Content.RichText = true
-		Content.TextWrapped = true
-		Content.TextSize = 14
-		Content.TextXAlignment = Enum.TextXAlignment.Left
-		Content.Text = table.concat(Entries, "<br>")
-		Content.Parent = Scroll
-	end
-
-	AddScrollingChangelog(InfoTab, "Latest Changelog", LCH)
-
-		local Games = {
+	local Games = {
 		"🟢 DOORS",
 		"🔴 Universal",
 	}
