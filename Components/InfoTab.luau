@@ -1,6 +1,6 @@
 return function(Window)
 	local LCH = {
-		"[DOORS]",
+		"<font color='rgb(0, 255, 0)'>+ New Info Tab.</font>",
 		"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
 		"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
 		"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
