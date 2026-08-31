@@ -1,12 +1,4 @@
 return function(Window)
-	local LCH = {
-		"7/8/2026",
-		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
-		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
-	}
-
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
 			return BlackKing.Environment.cloneref(Object)
@@ -69,10 +61,9 @@ return function(Window)
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
-	local changelogText = table.concat(LCH, "<br>")
 	InfoTab:UpdateWarningBox({
 	Title = "Latest Changelog",
-	Text = changelogText,
+	Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font>",
 	IsNormal = true, 
 	Visible = true,
 	LockSize = true,
