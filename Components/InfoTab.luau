@@ -70,14 +70,46 @@ local LCH = {
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local Info = InfoStuff:AddTab("", "settings")
 
-	local changelogText = table.concat(LCH, "<br>")
-	InfoTab:UpdateWarningBox({
-	Title = "Latest Changelog",
-	Text = changelogText,
-	IsNormal = true, 
-	Visible = true,
-	LockSize = true,
-	})
+	local function AddScrollingChangelog(Tab, Title, Entries)
+		local Container = Tab.Container
+
+		local Box = Instance.new("Frame")
+		Box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		Box.Position = UDim2.fromOffset(0, 7)
+		Box.Size = UDim2.new(1, 0, 0, 180)
+		Box.Parent = Container
+
+		local Scroll = Instance.new("ScrollingFrame")
+		Scroll.BackgroundTransparency = 1
+		Scroll.Size = UDim2.fromScale(1, 1)
+		Scroll.ScrollBarThickness = 3
+		Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+		Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		Scroll.Parent = Box
+
+		local TitleLabel = Instance.new("TextLabel")
+		TitleLabel.BackgroundTransparency = 1
+		TitleLabel.Size = UDim2.new(1, -8, 0, 20)
+		TitleLabel.Text = Title
+		TitleLabel.TextSize = 14
+		TitleLabel.Font = Enum.Font.GothamBold
+		TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+		TitleLabel.Parent = Scroll
+
+		local Content = Instance.new("TextLabel")
+		Content.BackgroundTransparency = 1
+		Content.Position = UDim2.new(0, 0, 0, 20)
+		Content.Size = UDim2.new(1, -8, 0, 0)
+		Content.AutomaticSize = Enum.AutomaticSize.Y
+		Content.RichText = true
+		Content.TextWrapped = true
+		Content.TextSize = 14
+		Content.TextXAlignment = Enum.TextXAlignment.Left
+		Content.Text = table.concat(Entries, "<br>")
+		Content.Parent = Scroll
+	end
+
+	AddScrollingChangelog(InfoTab, "Latest Changelog", LCH)
 
 		local Games = {
 		"🟢 DOORS",
