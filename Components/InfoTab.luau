@@ -1,7 +1,6 @@
 return function(Window)
 	local LCH = {
 		"<font color='rgb(0, 255, 0)'>+ BlackKing Temu.</font>",
-		"<font color='rgb(255, 0, 0)'>- BlackKing Temu.</font>",
 
 	}
 
