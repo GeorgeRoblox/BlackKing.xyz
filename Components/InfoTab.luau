@@ -1,11 +1,10 @@
 return function(Window)
 	local LCH = {
-		"[DOORS]",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
-		"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
+		"7/8/2026",
+		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
 	}
 
 	local function CloneReference(Object)
@@ -68,15 +67,15 @@ return function(Window)
 
 	local InfoStuff = InfoTab:AddRightTabbox("idk how to call this :content:")
 	local SupportInfo = InfoStuff:AddTab("", "folder")
-	local Info = InfoStuff:AddTab("", "settings")
+	local HwidInfo = InfoStuff:AddTab("", "settings")
 
 	local changelogText = table.concat(LCH, "<br>")
 	InfoTab:UpdateWarningBox({
-		Title = "Latest Changelog",
-		Text = changelogText,
-		IsNormal = true, 
-		Visible = true,
-		LockSize = true,
+	Title = "Latest Changelog",
+	Text = changelogText,
+	IsNormal = true, 
+	Visible = true,
+	LockSize = true,
 	})
 
 	local Games = {
@@ -90,5 +89,4 @@ return function(Window)
 	SupportInfo:AddDivider()
 	SupportInfo:AddLabel("Game: " .. CurrentGame, true)
 
-	Info:AddLabel("FireBacon, Seikoso, Upio, Mstudio\n and Java for emotional support <3")
-end
+	end
