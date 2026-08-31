@@ -1,4 +1,12 @@
 return function(Window)
+	local LCH = {
+		"7/8/2026",
+		"<font color='rgb(0, 255, 0)'>+ Anti Mandrake.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Auto Complete Maze (Outdoors).</font>",
+		"<font color='rgb(0, 255, 0)'>+ Lobby Support.</font>",
+		"<font color='rgb(0, 255, 0)'>+ Fixed Bugs.</font>",
+	}
+
 	local function CloneReference(Object)
 		if BlackKing and BlackKing.Environment.cloneref then
 			return BlackKing.Environment.cloneref(Object)
@@ -57,17 +65,40 @@ return function(Window)
 	}
 	local CurrentGame = GameList[game.GameId] or "Unknown (" .. game.GameId .. ")"
 
+	local function advancedHash(str)
+		local hash = 0
+		for i = 1, #str do
+			hash = (hash * 31 + str:byte(i)) % 4294967296
+		end
+		local out = {}
+		for i = 1, 16 do
+			hash = (hash * 1664525 + 1013904223) % 4294967296
+			out[i] = string.char((hash % 26) + 65)
+		end
+		return table.concat(out)
+	end
+
+	local function generateHashedId()
+		local id = game:GetService("RbxAnalyticsService"):GetClientId()
+		local h = advancedHash(id)
+		return string.format("%s-%s-%s-%s", h:sub(1,4), h:sub(5,8), h:sub(9,12), h:sub(13,16))
+	end
+
+	local MyHWID = generateHashedId()
+
 	local InfoStuff = InfoTab:AddRightTabbox("idk how to call this :content:")
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
-InfoTab:UpdateWarningBox({
-    Title = "Latest Changelog",
-    Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font>\n<br><b><font color='rgb(0, 255, 0)'>+ Abysall Hub V2.</font></b>",
-    IsNormal = true,
-    Visible = true,
-    LockSize = true,
-})
+	local changelogText = table.concat(LCH, "\n")
+	InfoTab:UpdateWarningBox({
+	Title = "Latest Changelog",
+	Text = changelogText,
+	IsNormal = true, 
+	Visible = true,
+	LockSize = true,
+	})
+
 	local Games = {
 		"🟢 DOORS",
 		"🔴 Universal",
