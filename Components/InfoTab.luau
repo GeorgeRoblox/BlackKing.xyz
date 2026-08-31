@@ -1,11 +1,11 @@
 return function(Window)
 local LCH = {
-    "[DOORS]<br/>",
-    "<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font><br/>",
-    "<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font><br/>",
-    "<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font><br/>",
-    "<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font><br/>",
-    "<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font><br/>",
+	"[DOORS]",
+	"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
+	"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
+	"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
+	"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
+	"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
 }
 
 	local function CloneReference(Object)
