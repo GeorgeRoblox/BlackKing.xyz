@@ -61,14 +61,13 @@ return function(Window)
 	local SupportInfo = InfoStuff:AddTab("", "folder")
 	local HwidInfo = InfoStuff:AddTab("", "settings")
 
-	InfoTab:UpdateWarningBox({
-	Title = "Latest Changelog",
-	Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font><b><font color='rgb(0, 255, 0)'>+ Abysall Hub V2.</font>",
-	IsNormal = true, 
-	Visible = true,
-	LockSize = true,
-	})
-
+InfoTab:UpdateWarningBox({
+    Title = "Latest Changelog",
+    Text = "<font color='rgb(0, 255, 0)'>+ Added FireBacon Support.</font><br><b><font color='rgb(0, 255, 0)'>+ Abysall Hub V2.</font></b>",
+    IsNormal = true,
+    Visible = true,
+    LockSize = true,
+})
 	local Games = {
 		"🟢 DOORS",
 		"🔴 Universal",
