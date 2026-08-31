@@ -1,11 +1,7 @@
 return function(Window)
 	local LCH = {
-		"<font color='rgb(0, 255, 0)'>+ New Info Tab.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Scribbles.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Stall Stampede of Drones.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Anti Alma.</font>",
-		"<font color='rgb(0, 255, 0)'>+ Added Remove Ransom.</font>",
-		"<font color='rgb(255, 0, 0)'>- Removed No A-90 Damage.</font>",
+		"<font color='rgb(0, 255, 0)'>+ BlackKing Temu.</font>",
+		"<font color='rgb(255, 0, 0)'>- BlackKing Temu.</font>",
 
 	}
 
